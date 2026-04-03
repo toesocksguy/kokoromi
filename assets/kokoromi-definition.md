@@ -1,0 +1,1 @@
+kokoromi is a Japanese word meaning trial or experiment, reflecting the idea of making small, intentional attempts to learn and grow.
