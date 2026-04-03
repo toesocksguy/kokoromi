@@ -54,6 +54,10 @@ android {
     }
 }
 
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
 dependencies {
     // Jetpack core
     implementation("androidx.core:core-ktx:1.15.0")
