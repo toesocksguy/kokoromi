@@ -87,6 +87,9 @@ dependencies {
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
 
+    // DataStore (user preferences)
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+
     // Logging
     implementation("com.jakewharton.timber:timber:5.0.1")
 

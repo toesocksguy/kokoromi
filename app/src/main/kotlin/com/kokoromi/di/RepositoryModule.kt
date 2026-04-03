@@ -1,19 +1,47 @@
 package com.kokoromi.di
 
+import com.kokoromi.data.repository.CompletionRepository
+import com.kokoromi.data.repository.DailyLogRepository
+import com.kokoromi.data.repository.DefaultCompletionRepository
+import com.kokoromi.data.repository.DefaultDailyLogRepository
+import com.kokoromi.data.repository.DefaultExperimentRepository
+import com.kokoromi.data.repository.DefaultFieldNoteRepository
+import com.kokoromi.data.repository.DefaultReflectionRepository
+import com.kokoromi.data.repository.ExperimentRepository
+import com.kokoromi.data.repository.FieldNoteRepository
+import com.kokoromi.data.repository.ReflectionRepository
+import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-
-// Repository bindings (interface → implementation) will be added here
-// in Milestone 2 once the data layer exists.
-//
-// Example shape:
-//
-// @Binds @Singleton
-// abstract fun bindExperimentRepository(
-//     impl: DefaultExperimentRepository
-// ): ExperimentRepository
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class RepositoryModule
+abstract class RepositoryModule {
+
+    @Binds @Singleton
+    abstract fun bindExperimentRepository(
+        impl: DefaultExperimentRepository
+    ): ExperimentRepository
+
+    @Binds @Singleton
+    abstract fun bindDailyLogRepository(
+        impl: DefaultDailyLogRepository
+    ): DailyLogRepository
+
+    @Binds @Singleton
+    abstract fun bindReflectionRepository(
+        impl: DefaultReflectionRepository
+    ): ReflectionRepository
+
+    @Binds @Singleton
+    abstract fun bindCompletionRepository(
+        impl: DefaultCompletionRepository
+    ): CompletionRepository
+
+    @Binds @Singleton
+    abstract fun bindFieldNoteRepository(
+        impl: DefaultFieldNoteRepository
+    ): FieldNoteRepository
+}
