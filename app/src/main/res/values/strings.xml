@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kokoromi</string>
+
+    <!-- Home screen -->
+    <string name="home_title">Kokoromi</string>
+    <string name="home_empty_heading">No active experiments</string>
+    <string name="home_empty_body">Start a small experiment to begin exploring.</string>
+    <string name="home_new_experiment">New Experiment</string>
+    <string name="home_max_experiments_reached">You have 2 active experiments. Finish or pause one to start another.</string>
+
+    <!-- Check-in -->
+    <string name="checkin_title">Check In</string>
+    <string name="checkin_did_you_do_it">Did you do it?</string>
+    <string name="checkin_yes">Yes</string>
+    <string name="checkin_no">No</string>
+    <string name="checkin_mood_before">How did you feel before?</string>
+    <string name="checkin_mood_after">How do you feel now?</string>
+    <string name="checkin_notes_hint">Any notes? (optional)</string>
+    <string name="checkin_save">Save</string>
+    <string name="checkin_edit_label">Edit today\'s log</string>
+
+    <!-- Create experiment -->
+    <string name="create_title">New Experiment</string>
+    <string name="create_hypothesis_label">What do you want to explore?</string>
+    <string name="create_hypothesis_hint">e.g. I think a 10-minute walk after lunch will improve my afternoon focus</string>
+    <string name="create_action_label">What will you do?</string>
+    <string name="create_action_hint">e.g. Walk around the block right after eating</string>
+    <string name="create_why_label">Why does this matter to you? (optional)</string>
+    <string name="create_duration_label">For how long?</string>
+    <string name="create_start">Start Experiment</string>
+
+    <!-- Reflection -->
+    <string name="reflection_title">Weekly Reflection</string>
+    <string name="reflection_plus_label">What went well?</string>
+    <string name="reflection_minus_label">What didn\'t work?</string>
+    <string name="reflection_next_label">What\'s one small thing to try next?</string>
+    <string name="reflection_save">Save Reflection</string>
+
+    <!-- Archive -->
+    <string name="archive_title">Archive</string>
+    <string name="archive_empty">Your completed experiments will appear here.</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_reflection_day">Reflection day</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_export_data">Export my data</string>
+    <string name="settings_export_description">Download all your experiments and logs as JSON</string>
+
+    <!-- Common -->
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="done">Done</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="close">Close</string>
+    <string name="days">days</string>
+    <string name="day">day</string>
+</resources>

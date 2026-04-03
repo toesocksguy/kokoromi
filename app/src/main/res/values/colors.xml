@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- These are used by the legacy theme in themes.xml for the splash screen
+         and system UI before Compose takes over. The full color palette lives
+         in Color.kt for use in Compose. -->
+    <color name="kokoromi_primary">#2D6A4F</color>
+    <color name="kokoromi_primary_dark">#9BD2B5</color>
+    <color name="kokoromi_background_light">#F6FBF7</color>
+    <color name="kokoromi_background_dark">#191C1A</color>
+</resources>
