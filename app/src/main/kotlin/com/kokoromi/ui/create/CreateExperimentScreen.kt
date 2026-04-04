@@ -19,6 +19,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -80,6 +81,11 @@ fun CreateExperimentScreen(
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { innerPadding ->
+        val placeholderColors = OutlinedTextFieldDefaults.colors(
+            unfocusedPlaceholderColor = MaterialTheme.colorScheme.outline,
+            focusedPlaceholderColor = MaterialTheme.colorScheme.outline,
+        )
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -98,6 +104,7 @@ fun CreateExperimentScreen(
                     placeholder = { Text("If I do X, will Y happen?") },
                     minLines = 3,
                     maxLines = 5,
+                    colors = placeholderColors,
                     modifier = Modifier.fillMaxWidth(),
                 )
                 Text(
@@ -114,9 +121,10 @@ fun CreateExperimentScreen(
                     value = form.action,
                     onValueChange = viewModel::onActionChange,
                     label = { Text("What will you do?") },
-                    placeholder = { Text("Describe the specific action you'll take") },
+                    placeholder = { Text("Describe the specific action you'll take (e.g. do 10 pushups a day)") },
                     minLines = 3,
                     maxLines = 5,
+                    colors = placeholderColors,
                     modifier = Modifier.fillMaxWidth(),
                 )
                 Text(
@@ -146,6 +154,7 @@ fun CreateExperimentScreen(
                     label = { Text("Why? (optional)") },
                     placeholder = { Text("What's your motivation?") },
                     maxLines = 3,
+                    colors = placeholderColors,
                     modifier = Modifier.fillMaxWidth(),
                 )
                 Text(
@@ -172,8 +181,8 @@ private fun DurationPicker(
     selectedDays: Int,
     onDurationChange: (Int) -> Unit,
 ) {
+    var isCustomMode by remember { mutableStateOf(false) }
     var customInput by remember { mutableStateOf("") }
-    val isCustomSelected = selectedDays !in DURATION_PRESETS
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
@@ -184,8 +193,9 @@ private fun DurationPicker(
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             DURATION_PRESETS.forEach { days ->
                 FilterChip(
-                    selected = selectedDays == days,
+                    selected = !isCustomMode && selectedDays == days,
                     onClick = {
+                        isCustomMode = false
                         customInput = ""
                         onDurationChange(days)
                     },
@@ -193,15 +203,15 @@ private fun DurationPicker(
                 )
             }
             FilterChip(
-                selected = isCustomSelected,
+                selected = isCustomMode,
                 onClick = {
+                    isCustomMode = true
                     customInput = ""
-                    onDurationChange(Constants.DEFAULT_EXPERIMENT_DURATION_DAYS)
                 },
                 label = { Text("Custom") },
             )
         }
-        if (isCustomSelected) {
+        if (isCustomMode) {
             OutlinedTextField(
                 value = customInput,
                 onValueChange = { input ->
@@ -244,12 +254,17 @@ private fun PactPreview(action: String, durationDays: Int) {
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
             )
             Text(
-                text = "\"I will ${action.trim()} for ${durationLabel(durationDays).lowercase()}.\"",
+                text = "\"I will ${formatActionForPact(action)} for ${durationLabel(durationDays).lowercase()}.\"",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
             )
         }
     }
+}
+
+private fun formatActionForPact(action: String): String {
+    val trimmed = action.trim().trimEnd('.', ',', '!', '?', ';', ':')
+    return trimmed[0].lowercaseChar() + trimmed.substring(1)
 }
 
 private fun durationLabel(days: Int): String = when (days) {
