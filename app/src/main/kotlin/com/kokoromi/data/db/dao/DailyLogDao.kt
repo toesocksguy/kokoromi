@@ -1,14 +1,17 @@
 package com.kokoromi.data.db.dao
 
 import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Upsert
 import com.kokoromi.data.db.entity.DailyLogEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DailyLogDao {
-    @Upsert
+    // REPLACE handles conflicts on the unique index (experiment_id, date),
+    // not just primary key — so inserting a new log for an existing day replaces it.
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertLog(log: DailyLogEntity)
 
     @Query("SELECT * FROM daily_logs WHERE experiment_id = :experimentId ORDER BY date DESC")
