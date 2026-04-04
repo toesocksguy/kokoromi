@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.kokoromi.ui.create.CreateExperimentScreen
 import com.kokoromi.ui.home.HomeScreen
 
 sealed class Screen(val route: String) {
@@ -30,7 +31,10 @@ fun KokoromiNavigation() {
             )
         }
         composable(Screen.CreateExperiment.route) {
-            // CreateExperimentScreen — next task
+            CreateExperimentScreen(
+                onBack = { navController.popBackStack() },
+                onSuccess = { navController.popBackStack() },
+            )
         }
     }
 }
