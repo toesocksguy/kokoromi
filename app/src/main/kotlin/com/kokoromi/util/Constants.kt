@@ -5,7 +5,7 @@ object Constants {
     const val MAX_ACTIVE_EXPERIMENTS = 2
     const val MIN_EXPERIMENT_DURATION_DAYS = 1
     const val MAX_EXPERIMENT_DURATION_DAYS = 180
-    const val DEFAULT_EXPERIMENT_DURATION_DAYS = 14
+    const val DEFAULT_EXPERIMENT_DURATION_DAYS = 7
 
     // Input character limits
     const val HYPOTHESIS_MAX_CHARS = 500
