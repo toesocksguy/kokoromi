@@ -45,7 +45,7 @@ fun HomeScreen(
             TopAppBar(
                 title = {
                     Column {
-                        Text("Tiny Experiments")
+                        Text("Kokoromi")
                         Text(
                             text = dateLabel,
                             style = androidx.compose.material3.MaterialTheme.typography.bodySmall,

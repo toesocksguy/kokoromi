@@ -35,7 +35,8 @@ fun ExperimentCard(
     val totalDays = remember(experiment.startDate, experiment.endDate) {
         ChronoUnit.DAYS.between(experiment.startDate, experiment.endDate).toInt() + 1
     }
-    val cardDescription = "${experiment.action}, day $dayNumber of $totalDays"
+    val action = experiment.action.trim().trimEnd('.', ',', '!', '?', ';', ':')
+    val cardDescription = "$action, day $dayNumber of $totalDays"
 
     Card(
         modifier = modifier
@@ -48,7 +49,7 @@ fun ExperimentCard(
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
-                    text = experiment.action,
+                    text = action,
                     style = MaterialTheme.typography.titleMedium,
                 )
                 Text(
