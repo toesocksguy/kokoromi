@@ -877,6 +877,28 @@ When no data:
 
 ---
 
+## Text Display Conventions
+
+These rules apply wherever user-entered text is displayed in the UI (cards, previews, labels). They do **not** apply to input fields, which show the raw text as typed.
+
+### Action text (ExperimentCard, pact preview)
+- **Capitalize the first character** — regardless of how the user typed it
+- **Strip trailing punctuation** — remove `.`, `,`, `!`, `?`, `;`, `:` from the end
+
+This ensures consistent, clean display:
+- "do 10 pushups a day" → "Do 10 pushups a day"
+- "Go for a walk." → "Go for a walk"
+- "meditate for 10 minutes," → "Meditate for 10 minutes"
+
+### Pact preview ("I will … for …")
+- The action is additionally **lowercased at the first character** so it reads naturally mid-sentence
+- Trailing punctuation is stripped before insertion (same rule as above)
+- Result: `"I will do 10 pushups a day for 1 week."`
+
+Apply these rules consistently in any new component that displays action or pact text.
+
+---
+
 ## Dark Mode
 
 All screens support system dark mode preference. Colors automatically adjust:

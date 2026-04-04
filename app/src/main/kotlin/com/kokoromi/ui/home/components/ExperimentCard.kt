@@ -36,6 +36,7 @@ fun ExperimentCard(
         ChronoUnit.DAYS.between(experiment.startDate, experiment.endDate).toInt() + 1
     }
     val action = experiment.action.trim().trimEnd('.', ',', '!', '?', ';', ':')
+        .replaceFirstChar { it.uppercase() }
     val cardDescription = "$action, day $dayNumber of $totalDays"
 
     Card(

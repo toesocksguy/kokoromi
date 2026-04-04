@@ -20,6 +20,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -93,7 +95,9 @@ fun HomeScreen(
                         if (state.canCreateExperiment) {
                             OutlinedButton(
                                 onClick = onCreateExperiment,
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .semantics { contentDescription = "New experiment" },
                             ) {
                                 Text("+ New Experiment")
                             }
@@ -118,6 +122,7 @@ private fun EmptyState(
         Text(
             text = "🔬",
             style = androidx.compose.material3.MaterialTheme.typography.displayLarge,
+            modifier = Modifier.semantics { contentDescription = "" },
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
@@ -132,7 +137,10 @@ private fun EmptyState(
             color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(modifier = Modifier.height(24.dp))
-        Button(onClick = onCreateExperiment) {
+        Button(
+            onClick = onCreateExperiment,
+            modifier = Modifier.semantics { contentDescription = "Create experiment" },
+        ) {
             Text("+ Create Experiment")
         }
     }
