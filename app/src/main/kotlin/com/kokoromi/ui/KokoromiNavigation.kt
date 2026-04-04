@@ -4,11 +4,12 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.kokoromi.ui.home.HomeScreen
 
 sealed class Screen(val route: String) {
     object Home : Screen("home")
     // Screens are registered here as each milestone is built:
-    // object CreateExperiment : Screen("create_experiment")
+    object CreateExperiment : Screen("create_experiment")
     // object CheckIn : Screen("check_in/{experimentId}")
     // object Reflection : Screen("reflection")
     // object Archive : Screen("archive")
@@ -23,7 +24,13 @@ fun KokoromiNavigation() {
         startDestination = Screen.Home.route
     ) {
         composable(Screen.Home.route) {
-            // HomeScreen will be added in Milestone 3
+            HomeScreen(
+                onCreateExperiment = { navController.navigate(Screen.CreateExperiment.route) },
+                onCheckIn = { /* wired in Milestone 4 */ },
+            )
+        }
+        composable(Screen.CreateExperiment.route) {
+            // CreateExperimentScreen — next task
         }
     }
 }

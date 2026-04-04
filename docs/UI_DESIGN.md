@@ -195,7 +195,7 @@ Settings Screen
 
 **Interactions**:
 - Tap [✓ YES] → Opens Check-In Screen with completion pre-selected
-- Tap [✗ SKIP] → Records "skip" immediately, no modal (instant feedback)
+- Tap [✗ SKIP] → Opens Check-In Screen with SKIP pre-selected (allows adding a note before saving)
 - Tap card → Opens Experiment Detail Screen
 - Long-press card → Context menu (pause, view details, archive)
 - Tap Archive tab → Goes to Archive Screen
