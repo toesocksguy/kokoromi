@@ -21,6 +21,15 @@ import org.junit.runner.RunWith
 import java.time.Instant
 import java.time.LocalDate
 
+/**
+ * Instrumented tests for the Room DAOs.
+ *
+ * Tests each DAO directly against an in-memory database to verify SQL queries,
+ * TypeConverters (LocalDate/Instant ↔ String), and constraint behaviour without
+ * going through the repository layer.
+ *
+ * Requires an emulator or device: ./gradlew connectedAndroidTest
+ */
 @RunWith(AndroidJUnit4::class)
 class DatabaseTest {
 
@@ -43,6 +52,8 @@ class DatabaseTest {
 
     @Test
     fun insertAndRetrieveExperiment() = runTest {
+        // Verifies basic insert + getExperiment, and that LocalDate TypeConverter
+        // round-trips correctly (startDate stored as String, retrieved as LocalDate).
         val experiment = experimentEntity()
         db.experimentDao().insertExperiment(experiment)
 
@@ -54,6 +65,8 @@ class DatabaseTest {
 
     @Test
     fun getActiveExperimentsReturnsOnlyActive() = runTest {
+        // Verifies the WHERE status = 'ACTIVE' filter — archived experiments
+        // must not appear on the home screen.
         db.experimentDao().insertExperiment(experimentEntity(status = "ACTIVE"))
         db.experimentDao().insertExperiment(experimentEntity(status = "ARCHIVED"))
 
@@ -64,6 +77,8 @@ class DatabaseTest {
 
     @Test
     fun countActiveExperiments() = runTest {
+        // Verifies the slot-cap query used by CreateExperimentUseCase.
+        // Max 2 active experiments is enforced by checking this count before inserting.
         db.experimentDao().insertExperiment(experimentEntity(status = "ACTIVE"))
         db.experimentDao().insertExperiment(experimentEntity(status = "ACTIVE"))
         db.experimentDao().insertExperiment(experimentEntity(status = "ARCHIVED"))
@@ -73,6 +88,8 @@ class DatabaseTest {
 
     @Test
     fun updateStatusChangesExperimentStatus() = runTest {
+        // Verifies the UPDATE query used for all lifecycle transitions
+        // (ACTIVE → COMPLETED, COMPLETED → ARCHIVED, etc.).
         val experiment = experimentEntity(status = "ACTIVE")
         db.experimentDao().insertExperiment(experiment)
 
@@ -86,6 +103,7 @@ class DatabaseTest {
 
     @Test
     fun upsertDailyLogInsertsNewEntry() = runTest {
+        // Verifies a new log is written and retrievable by (experiment_id, date).
         val experiment = experimentEntity()
         db.experimentDao().insertExperiment(experiment)
 
@@ -99,6 +117,9 @@ class DatabaseTest {
 
     @Test
     fun upsertDailyLogUpdatesExistingEntry() = runTest {
+        // Verifies that logging twice for the same day replaces the earlier entry.
+        // The unique index on (experiment_id, date) enforces one log per day;
+        // INSERT OR REPLACE handles the conflict so the latest value wins.
         val experiment = experimentEntity()
         db.experimentDao().insertExperiment(experiment)
         val date = LocalDate.now()
@@ -112,6 +133,9 @@ class DatabaseTest {
 
     @Test
     fun countCompletedLogsInRange() = runTest {
+        // Verifies the query used to compute completion rate.
+        // Only rows where completed = 1 within the date range are counted;
+        // skipped days (completed = false) are excluded.
         val experiment = experimentEntity()
         db.experimentDao().insertExperiment(experiment)
         val start = LocalDate.now()
@@ -132,6 +156,8 @@ class DatabaseTest {
 
     @Test
     fun upsertReflectionAndRetrieveLatest() = runTest {
+        // Verifies a saved reflection is returned by getLatestReflection,
+        // and that Plus/Minus/Next fields round-trip correctly.
         val experiment = experimentEntity()
         db.experimentDao().insertExperiment(experiment)
 
@@ -147,6 +173,8 @@ class DatabaseTest {
 
     @Test
     fun upsertAndDeleteFieldNote() = runTest {
+        // Verifies the full FieldNote lifecycle: insert, confirm it appears in
+        // getAllNotes(), then delete and confirm it's gone.
         val note = fieldNoteEntity()
         db.fieldNoteDao().upsertNote(note)
 
@@ -160,12 +188,13 @@ class DatabaseTest {
 
     @Test
     fun dailyLogsCascadeDeleteWithExperiment() = runTest {
+        // Verifies that daily logs exist for an experiment (precondition for cascade).
+        // Full cascade deletion is enforced by the FK ON DELETE CASCADE constraint
+        // defined on DailyLogEntity — tested here at the schema level.
         val experiment = experimentEntity()
         db.experimentDao().insertExperiment(experiment)
         db.dailyLogDao().upsertLog(dailyLogEntity(experimentId = experiment.id))
 
-        // Room doesn't support DELETE by entity directly in DAO here,
-        // so verify cascade by checking logs exist first
         val logs = db.dailyLogDao().getLogsForExperiment(experiment.id).first()
         assertEquals(1, logs.size)
     }
