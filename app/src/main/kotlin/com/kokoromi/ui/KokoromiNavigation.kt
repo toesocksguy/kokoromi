@@ -1,17 +1,22 @@
 package com.kokoromi.ui
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.kokoromi.ui.checkin.CheckInScreen
 import com.kokoromi.ui.create.CreateExperimentScreen
 import com.kokoromi.ui.home.HomeScreen
 
 sealed class Screen(val route: String) {
     object Home : Screen("home")
-    // Screens are registered here as each milestone is built:
     object CreateExperiment : Screen("create_experiment")
-    // object CheckIn : Screen("check_in/{experimentId}")
+    object CheckIn : Screen("check_in/{experimentId}/{initialCompleted}") {
+        fun route(experimentId: String, initialCompleted: Boolean) =
+            "check_in/$experimentId/$initialCompleted"
+    }
     // object Reflection : Screen("reflection")
     // object Archive : Screen("archive")
     // object Settings : Screen("settings")
@@ -27,7 +32,9 @@ fun KokoromiNavigation() {
         composable(Screen.Home.route) {
             HomeScreen(
                 onCreateExperiment = { navController.navigate(Screen.CreateExperiment.route) },
-                onCheckIn = { /* wired in Milestone 4 */ },
+                onCheckIn = { experimentId, initialCompleted ->
+                    navController.navigate(Screen.CheckIn.route(experimentId, initialCompleted))
+                },
             )
         }
         composable(Screen.CreateExperiment.route) {
@@ -35,6 +42,15 @@ fun KokoromiNavigation() {
                 onBack = { navController.popBackStack() },
                 onSuccess = { navController.popBackStack() },
             )
+        }
+        composable(
+            route = Screen.CheckIn.route,
+            arguments = listOf(
+                navArgument("experimentId") { type = NavType.StringType },
+                navArgument("initialCompleted") { type = NavType.BoolType },
+            ),
+        ) {
+            CheckInScreen(onBack = { navController.popBackStack() })
         }
     }
 }

@@ -34,7 +34,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun HomeScreen(
     onCreateExperiment: () -> Unit,
-    onCheckIn: (experimentId: String) -> Unit,
+    onCheckIn: (experimentId: String, initialCompleted: Boolean) -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -87,8 +87,8 @@ fun HomeScreen(
                         state.experiments.forEach { experiment ->
                             ExperimentCard(
                                 experiment = experiment,
-                                onCheckIn = { onCheckIn(experiment.id) },
-                                onSkip = { onCheckIn(experiment.id) },
+                                onCheckIn = { onCheckIn(experiment.id, true) },
+                                onSkip = { onCheckIn(experiment.id, false) },
                             )
                         }
 

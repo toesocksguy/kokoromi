@@ -219,7 +219,7 @@ Settings Screen
   - YES: Pre-filled, tappable to submit
   - SKIP: Pre-filled, tappable to skip
 - **Optional Sections** (expandable or always visible):
-  - **Mood**: "How did it feel?" with 1-5 star/emoji rating (tap to select)
+  - **Mood**: "How did it feel?" with 1-5 star/emoji rating (tap to select) — maps to `moodAfter` in the data model. `moodBefore` is left null; a pre-activity rating would require a second prompt and adds friction without clear payoff in v1.
   - **Notes**: Free text input, placeholder "Anything interesting?"
 - **Save Button**: "Log Activity"
 - **Optional Daily Reflection** (appears after saving, not before):
