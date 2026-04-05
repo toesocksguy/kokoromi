@@ -68,6 +68,11 @@ fun CheckInScreen(
         is CheckInUiState.Error -> state.experimentAction
         else -> ""
     }
+    val isEditing = when (val state = uiState) {
+        is CheckInUiState.Ready -> state.isEditing
+        is CheckInUiState.Error -> state.isEditing
+        else -> false
+    }
 
     Scaffold(
         topBar = {
@@ -108,7 +113,7 @@ fun CheckInScreen(
                     verticalArrangement = Arrangement.spacedBy(20.dp),
                 ) {
                     Text(
-                        text = "Did you do it today?",
+                        text = if (isEditing) "Edit today's log" else "Did you do it today?",
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

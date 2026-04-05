@@ -24,9 +24,9 @@ data class CheckInFormState(
 
 sealed interface CheckInUiState {
     data object Loading : CheckInUiState
-    data class Ready(val experimentAction: String) : CheckInUiState
+    data class Ready(val experimentAction: String, val isEditing: Boolean) : CheckInUiState
     data object Saved : CheckInUiState
-    data class Error(val message: String, val experimentAction: String) : CheckInUiState
+    data class Error(val message: String, val experimentAction: String, val isEditing: Boolean = false) : CheckInUiState
 }
 
 @HiltViewModel
@@ -64,6 +64,7 @@ class CheckInViewModel @Inject constructor(
             )
             _uiState.value = CheckInUiState.Ready(
                 experimentAction = experiment.action.displayFormat(),
+                isEditing = existingLog != null,
             )
         }
     }
@@ -82,7 +83,7 @@ class CheckInViewModel @Inject constructor(
 
     fun onSubmit() {
         val f = _form.value
-        val currentAction = (_uiState.value as? CheckInUiState.Ready)?.experimentAction ?: ""
+        val readyState = _uiState.value as? CheckInUiState.Ready
         _uiState.value = CheckInUiState.Loading
         viewModelScope.launch {
             logDailyCheckIn(
@@ -97,15 +98,19 @@ class CheckInViewModel @Inject constructor(
             }.onFailure { error ->
                 _uiState.value = CheckInUiState.Error(
                     message = error.message ?: "Something went wrong",
-                    experimentAction = currentAction,
+                    experimentAction = readyState?.experimentAction ?: "",
+                    isEditing = readyState?.isEditing ?: false,
                 )
             }
         }
     }
 
     fun onErrorDismissed() {
-        val action = (_uiState.value as? CheckInUiState.Error)?.experimentAction ?: ""
-        _uiState.value = CheckInUiState.Ready(experimentAction = action)
+        val error = _uiState.value as? CheckInUiState.Error
+        _uiState.value = CheckInUiState.Ready(
+            experimentAction = error?.experimentAction ?: "",
+            isEditing = error?.isEditing ?: false,
+        )
     }
 
     private fun String.displayFormat(): String =
