@@ -209,9 +209,6 @@ private fun MoodRating(
         Row(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.semantics {
-                contentDescription = if (value != null) "Mood rating: $value out of ${Constants.MOOD_MAX}" else "Mood rating: not set"
-            },
         ) {
             (Constants.MOOD_MIN..Constants.MOOD_MAX).forEach { star ->
                 IconButton(
@@ -220,7 +217,10 @@ private fun MoodRating(
                         onValueChange(if (value == star) null else star)
                     },
                     modifier = Modifier.semantics {
-                        contentDescription = if ((value ?: 0) >= star) "Star $star, filled" else "Star $star, empty"
+                        contentDescription = buildString {
+                            append(if ((value ?: 0) >= star) "Star $star, filled" else "Star $star, empty")
+                            if (value == star) append(", tap to clear")
+                        }
                     },
                 ) {
                     Icon(
