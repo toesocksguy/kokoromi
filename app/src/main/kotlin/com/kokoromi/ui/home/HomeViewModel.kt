@@ -28,7 +28,7 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     val uiState: StateFlow<HomeUiState> = getActiveExperiments()
-        .map { experiments ->
+        .map<List<Experiment>, HomeUiState> { experiments ->
             HomeUiState.Success(
                 experiments = experiments,
                 canCreateExperiment = experiments.size < Constants.MAX_ACTIVE_EXPERIMENTS,
