@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -68,35 +67,18 @@ fun ExperimentCard(
                 logs = experimentWithLogs.logs,
             )
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                // Before logging today: both buttons are equal (no nudge toward YES).
-                // After logging: highlight the chosen one.
-                val yesSelected = todayLog?.completed == true
-                val skipSelected = todayLog?.completed == false
-
-                if (yesSelected) {
-                    Button(
-                        onClick = onCheckIn,
-                        modifier = Modifier.weight(1f).minimumInteractiveComponentSize(),
-                    ) { Text("✓ YES") }
-                    OutlinedButton(
-                        onClick = onSkip,
-                        modifier = Modifier.weight(1f).minimumInteractiveComponentSize(),
-                    ) { Text("✗ SKIP") }
-                } else if (skipSelected) {
-                    OutlinedButton(
-                        onClick = onCheckIn,
-                        modifier = Modifier.weight(1f).minimumInteractiveComponentSize(),
-                    ) { Text("✓ YES") }
-                    Button(
-                        onClick = onSkip,
-                        modifier = Modifier.weight(1f).minimumInteractiveComponentSize(),
-                    ) { Text("✗ SKIP") }
-                } else {
-                    // No log yet — both equal
+            if (todayLog != null) {
+                OutlinedButton(
+                    onClick = onCheckIn,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .minimumInteractiveComponentSize(),
+                ) { Text("Edit Log") }
+            } else {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
                     OutlinedButton(
                         onClick = onCheckIn,
                         modifier = Modifier.weight(1f).minimumInteractiveComponentSize(),
