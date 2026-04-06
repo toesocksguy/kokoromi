@@ -48,14 +48,19 @@ fun StreakDisplay(
 
             val color = when {
                 isToday && log == null -> MaterialTheme.colorScheme.primary
-                log?.completed == true -> MaterialTheme.colorScheme.primaryContainer
-                else -> MaterialTheme.colorScheme.surfaceContainerHigh
+                log?.completed == true -> MaterialTheme.colorScheme.primary
+                else -> MaterialTheme.colorScheme.outlineVariant
+            }
+            val alpha = when {
+                isFuture -> 0.4f
+                log?.completed == true -> 0.6f
+                else -> 1f
             }
 
             Box(
                 modifier = Modifier
                     .size(14.dp)
-                    .alpha(if (isFuture) 0.25f else 1f)
+                    .alpha(alpha)
                     .clip(RoundedCornerShape(3.dp))
                     .background(color),
             )
