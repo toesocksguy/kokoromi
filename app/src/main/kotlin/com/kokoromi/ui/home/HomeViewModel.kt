@@ -51,7 +51,7 @@ class HomeViewModel @Inject constructor(
             experiments = active,
             completedExperiments = completed,
             canCreateExperiment = active.size < Constants.MAX_ACTIVE_EXPERIMENTS,
-        )
+        ) as HomeUiState
     }
         .catch { e -> emit(HomeUiState.Error(e.message ?: "Failed to load experiments")) }
         .stateIn(

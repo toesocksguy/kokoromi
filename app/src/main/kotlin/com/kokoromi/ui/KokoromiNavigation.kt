@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.kokoromi.ui.checkin.CheckInScreen
+import com.kokoromi.ui.completion.CompletionScreen
 import com.kokoromi.ui.create.CreateExperimentScreen
 import com.kokoromi.ui.home.HomeScreen
 import java.time.LocalDate
@@ -61,6 +62,22 @@ fun KokoromiNavigation() {
             ),
         ) {
             CheckInScreen(onBack = { navController.popBackStack() })
+        }
+        composable(
+            route = Screen.Completion.route,
+            arguments = listOf(
+                navArgument("experimentId") { type = NavType.StringType },
+            ),
+        ) {
+            CompletionScreen(
+                onNavigateToHome = {
+                    navController.popBackStack(Screen.Home.route, inclusive = false)
+                },
+                onNavigateToCreate = {
+                    navController.popBackStack(Screen.Home.route, inclusive = false)
+                    navController.navigate(Screen.CreateExperiment.route)
+                },
+            )
         }
     }
 }

@@ -61,7 +61,7 @@ class HomeScreenTest {
     fun clickingCreateButtonInEmptyStateInvokesCallback() {
         var called = false
         composeRule.setContent {
-            HomeScreen(onCreateExperiment = { called = true }, onCheckIn = { _, _ -> }, viewModel = viewModel)
+            HomeScreen(onCreateExperiment = { called = true }, onCheckIn = { _, _ -> }, onNavigateToCompletion = {}, viewModel = viewModel)
         }
 
         composeRule.onNodeWithContentDescription("Create experiment").performClick()
@@ -108,7 +108,7 @@ class HomeScreenTest {
         fakeRepo.setActiveExperiments(listOf(makeExperiment()))
 
         composeRule.setContent {
-            HomeScreen(onCreateExperiment = { called = true }, onCheckIn = { _, _ -> }, viewModel = viewModel)
+            HomeScreen(onCreateExperiment = { called = true }, onCheckIn = { _, _ -> }, onNavigateToCompletion = {}, viewModel = viewModel)
         }
 
         composeRule.onNodeWithContentDescription("New experiment").performClick()
