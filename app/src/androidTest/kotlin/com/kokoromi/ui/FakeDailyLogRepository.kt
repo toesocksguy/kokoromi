@@ -10,6 +10,10 @@ class FakeDailyLogRepository : DailyLogRepository {
 
     private val logs = MutableStateFlow<List<DailyLog>>(emptyList())
 
+    fun seedLog(log: DailyLog) {
+        logs.value = logs.value + log
+    }
+
     override suspend fun upsertDailyLog(log: DailyLog) {
         val updated = logs.value.filter { it.date != log.date || it.experimentId != log.experimentId } + log
         logs.value = updated
