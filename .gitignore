@@ -37,3 +37,6 @@ screenshots/
 
 ### Emacs backup files ###
 *~
+
+### Kotlin compiler session files ###
+.kotlin/

@@ -22,11 +22,17 @@ data class CheckInFormState(
     val notes: String = "",
 )
 
+data class CheckInDisplayState(
+    val experimentAction: String,
+    val isEditing: Boolean,
+    val checkInDate: LocalDate,
+)
+
 sealed interface CheckInUiState {
     data object Loading : CheckInUiState
-    data class Ready(val experimentAction: String, val isEditing: Boolean, val checkInDate: LocalDate) : CheckInUiState
+    data object Ready : CheckInUiState
     data object Saved : CheckInUiState
-    data class Error(val message: String, val experimentAction: String, val isEditing: Boolean = false, val checkInDate: LocalDate = LocalDate.now()) : CheckInUiState
+    data class Error(val message: String) : CheckInUiState
 }
 
 @HiltViewModel
@@ -45,6 +51,9 @@ class CheckInViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<CheckInUiState>(CheckInUiState.Loading)
     val uiState: StateFlow<CheckInUiState> = _uiState.asStateFlow()
 
+    private val _displayState = MutableStateFlow<CheckInDisplayState?>(null)
+    val displayState: StateFlow<CheckInDisplayState?> = _displayState.asStateFlow()
+
     private val _form = MutableStateFlow(CheckInFormState())
     val form: StateFlow<CheckInFormState> = _form.asStateFlow()
 
@@ -52,10 +61,7 @@ class CheckInViewModel @Inject constructor(
         viewModelScope.launch {
             val experiment = experimentRepository.getExperiment(experimentId)
             if (experiment == null) {
-                _uiState.value = CheckInUiState.Error(
-                    message = "Experiment not found",
-                    experimentAction = "",
-                )
+                _uiState.value = CheckInUiState.Error("Experiment not found")
                 return@launch
             }
             val existingLog = dailyLogRepository.getLogForDate(experimentId, checkInDate)
@@ -64,11 +70,12 @@ class CheckInViewModel @Inject constructor(
                 mood = existingLog?.moodAfter,
                 notes = existingLog?.notes ?: "",
             )
-            _uiState.value = CheckInUiState.Ready(
+            _displayState.value = CheckInDisplayState(
                 experimentAction = experiment.action.displayFormat(),
                 isEditing = existingLog != null,
                 checkInDate = checkInDate,
             )
+            _uiState.value = CheckInUiState.Ready
         }
     }
 
@@ -86,7 +93,6 @@ class CheckInViewModel @Inject constructor(
 
     fun onSubmit() {
         val f = _form.value
-        val readyState = _uiState.value as? CheckInUiState.Ready
         _uiState.value = CheckInUiState.Loading
         viewModelScope.launch {
             logDailyCheckIn(
@@ -99,22 +105,13 @@ class CheckInViewModel @Inject constructor(
             ).onSuccess {
                 _uiState.value = CheckInUiState.Saved
             }.onFailure { error ->
-                _uiState.value = CheckInUiState.Error(
-                    message = error.message ?: "Something went wrong",
-                    experimentAction = readyState?.experimentAction ?: "",
-                    isEditing = readyState?.isEditing ?: false,
-                )
+                _uiState.value = CheckInUiState.Error(error.message ?: "Something went wrong")
             }
         }
     }
 
     fun onErrorDismissed() {
-        val error = _uiState.value as? CheckInUiState.Error
-        _uiState.value = CheckInUiState.Ready(
-            experimentAction = error?.experimentAction ?: "",
-            isEditing = error?.isEditing ?: false,
-            checkInDate = error?.checkInDate ?: checkInDate,
-        )
+        _uiState.value = CheckInUiState.Ready
     }
 
     private fun String.displayFormat(): String =
