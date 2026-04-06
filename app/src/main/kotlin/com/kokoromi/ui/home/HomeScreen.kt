@@ -70,6 +70,23 @@ fun HomeScreen(
                 }
             }
 
+            is HomeUiState.Error -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "Something went wrong. Try restarting the app.",
+                        style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                        color = androidx.compose.material3.MaterialTheme.colorScheme.error,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 32.dp),
+                    )
+                }
+            }
+
             is HomeUiState.Success -> {
                 Column(
                     modifier = Modifier
