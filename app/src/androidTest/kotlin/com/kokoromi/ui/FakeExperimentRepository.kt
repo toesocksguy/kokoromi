@@ -28,6 +28,7 @@ class FakeExperimentRepository : ExperimentRepository {
     override suspend fun getExperiment(id: String): Experiment? =
         _activeExperiments.value.find { it.id == id }
     override fun getAllExperiments(): Flow<List<Experiment>> = _activeExperiments
+    override fun getCompletedExperiments(): Flow<List<Experiment>> = MutableStateFlow(emptyList())
     override fun getArchivedExperiments(): Flow<List<Experiment>> = MutableStateFlow(emptyList())
     override suspend fun updateExperimentStatus(id: String, status: ExperimentStatus) {}
     override suspend fun completeExperiment(id: String, decision: DecisionType, nextExperimentId: String?) {}

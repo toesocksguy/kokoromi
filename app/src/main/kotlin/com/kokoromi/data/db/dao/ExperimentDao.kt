@@ -21,6 +21,9 @@ interface ExperimentDao {
     @Query("SELECT * FROM experiments ORDER BY created_at DESC")
     fun getAllExperiments(): Flow<List<ExperimentEntity>>
 
+    @Query("SELECT * FROM experiments WHERE status = 'COMPLETED' ORDER BY updated_at DESC")
+    fun getCompletedExperiments(): Flow<List<ExperimentEntity>>
+
     @Query("SELECT * FROM experiments WHERE status = 'ARCHIVED' ORDER BY updated_at DESC")
     fun getArchivedExperiments(): Flow<List<ExperimentEntity>>
 

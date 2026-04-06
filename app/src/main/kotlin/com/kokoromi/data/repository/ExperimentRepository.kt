@@ -10,6 +10,7 @@ interface ExperimentRepository {
     suspend fun getExperiment(id: String): Experiment?
     fun getActiveExperiments(): Flow<List<Experiment>>
     fun getAllExperiments(): Flow<List<Experiment>>
+    fun getCompletedExperiments(): Flow<List<Experiment>>
     fun getArchivedExperiments(): Flow<List<Experiment>>
     suspend fun getActiveExperimentCount(): Int
     suspend fun updateExperimentStatus(id: String, status: ExperimentStatus)

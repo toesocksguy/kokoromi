@@ -20,6 +20,9 @@ sealed class Screen(val route: String) {
             return if (date != null) "$base?date=$date" else base
         }
     }
+    object Completion : Screen("completion/{experimentId}") {
+        fun route(experimentId: String) = "completion/$experimentId"
+    }
     // object Reflection : Screen("reflection")
     // object Archive : Screen("archive")
     // object Settings : Screen("settings")
@@ -37,6 +40,9 @@ fun KokoromiNavigation() {
                 onCreateExperiment = { navController.navigate(Screen.CreateExperiment.route) },
                 onCheckIn = { experimentId, initialCompleted ->
                     navController.navigate(Screen.CheckIn.route(experimentId, initialCompleted))
+                },
+                onNavigateToCompletion = { experimentId ->
+                    navController.navigate(Screen.Completion.route(experimentId))
                 },
             )
         }

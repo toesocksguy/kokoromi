@@ -43,6 +43,12 @@ class DefaultExperimentRepository @Inject constructor(
         }
     }
 
+    override fun getCompletedExperiments(): Flow<List<Experiment>> {
+        return experimentDao.getCompletedExperiments().map { entities ->
+            entities.map { it.toDomain() }
+        }
+    }
+
     override fun getArchivedExperiments(): Flow<List<Experiment>> {
         return experimentDao.getArchivedExperiments().map { entities ->
             entities.map { it.toDomain() }
