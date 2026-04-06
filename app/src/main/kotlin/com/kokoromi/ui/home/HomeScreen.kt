@@ -101,11 +101,11 @@ fun HomeScreen(
                             modifier = Modifier.weight(1f),
                         )
                     } else {
-                        state.experiments.forEach { experiment ->
+                        state.experiments.forEach { experimentWithLogs ->
                             ExperimentCard(
-                                experiment = experiment,
-                                onCheckIn = { onCheckIn(experiment.id, true) },
-                                onSkip = { onCheckIn(experiment.id, false) },
+                                experimentWithLogs = experimentWithLogs,
+                                onCheckIn = { onCheckIn(experimentWithLogs.experiment.id, true) },
+                                onSkip = { onCheckIn(experimentWithLogs.experiment.id, false) },
                             )
                         }
 

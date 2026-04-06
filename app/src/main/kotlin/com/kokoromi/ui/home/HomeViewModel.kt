@@ -2,8 +2,8 @@ package com.kokoromi.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kokoromi.domain.model.Experiment
-import com.kokoromi.domain.usecase.GetActiveExperimentsUseCase
+import com.kokoromi.domain.model.ExperimentWithLogs
+import com.kokoromi.domain.usecase.GetActiveExperimentsWithLogsUseCase
 import com.kokoromi.util.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,7 +16,7 @@ import javax.inject.Inject
 sealed interface HomeUiState {
     data object Loading : HomeUiState
     data class Success(
-        val experiments: List<Experiment>,
+        val experiments: List<ExperimentWithLogs>,
         val canCreateExperiment: Boolean,
     ) : HomeUiState
     data class Error(val message: String) : HomeUiState
@@ -24,11 +24,11 @@ sealed interface HomeUiState {
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    getActiveExperiments: GetActiveExperimentsUseCase,
+    getActiveExperimentsWithLogs: GetActiveExperimentsWithLogsUseCase,
 ) : ViewModel() {
 
-    val uiState: StateFlow<HomeUiState> = getActiveExperiments()
-        .map<List<Experiment>, HomeUiState> { experiments ->
+    val uiState: StateFlow<HomeUiState> = getActiveExperimentsWithLogs()
+        .map<List<ExperimentWithLogs>, HomeUiState> { experiments ->
             HomeUiState.Success(
                 experiments = experiments,
                 canCreateExperiment = experiments.size < Constants.MAX_ACTIVE_EXPERIMENTS,

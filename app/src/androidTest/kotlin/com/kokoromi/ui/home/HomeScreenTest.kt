@@ -7,7 +7,8 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.kokoromi.domain.usecase.GetActiveExperimentsUseCase
+import com.kokoromi.domain.usecase.GetActiveExperimentsWithLogsUseCase
+import com.kokoromi.ui.FakeDailyLogRepository
 import com.kokoromi.ui.FakeExperimentRepository
 import com.kokoromi.ui.makeExperiment
 import org.junit.Assert.assertTrue
@@ -23,12 +24,14 @@ class HomeScreenTest {
     val composeRule = createComposeRule()
 
     private lateinit var fakeRepo: FakeExperimentRepository
+    private lateinit var fakeLogs: FakeDailyLogRepository
     private lateinit var viewModel: HomeViewModel
 
     @Before
     fun setUp() {
         fakeRepo = FakeExperimentRepository()
-        viewModel = HomeViewModel(GetActiveExperimentsUseCase(fakeRepo))
+        fakeLogs = FakeDailyLogRepository()
+        viewModel = HomeViewModel(GetActiveExperimentsWithLogsUseCase(fakeRepo, fakeLogs))
     }
 
     @Test

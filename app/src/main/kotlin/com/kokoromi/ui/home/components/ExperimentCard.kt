@@ -17,17 +17,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import com.kokoromi.domain.model.Experiment
+import com.kokoromi.domain.model.ExperimentWithLogs
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
 @Composable
 fun ExperimentCard(
-    experiment: Experiment,
+    experimentWithLogs: ExperimentWithLogs,
     onCheckIn: () -> Unit,
     onSkip: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val experiment = experimentWithLogs.experiment
+    val todayLog = experimentWithLogs.todayLog
     val today = remember { LocalDate.now() }
     val dayNumber = remember(experiment.startDate) {
         ChronoUnit.DAYS.between(experiment.startDate, today).toInt() + 1
@@ -60,25 +62,49 @@ fun ExperimentCard(
                 )
             }
 
+            StreakDisplay(
+                startDate = experiment.startDate,
+                endDate = experiment.endDate,
+                logs = experimentWithLogs.logs,
+            )
+
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Button(
-                    onClick = onCheckIn,
-                    modifier = Modifier
-                        .weight(1f)
-                        .minimumInteractiveComponentSize(),
-                ) {
-                    Text("✓ YES")
-                }
-                OutlinedButton(
-                    onClick = onSkip,
-                    modifier = Modifier
-                        .weight(1f)
-                        .minimumInteractiveComponentSize(),
-                ) {
-                    Text("✗ SKIP")
+                // Before logging today: both buttons are equal (no nudge toward YES).
+                // After logging: highlight the chosen one.
+                val yesSelected = todayLog?.completed == true
+                val skipSelected = todayLog?.completed == false
+
+                if (yesSelected) {
+                    Button(
+                        onClick = onCheckIn,
+                        modifier = Modifier.weight(1f).minimumInteractiveComponentSize(),
+                    ) { Text("✓ YES") }
+                    OutlinedButton(
+                        onClick = onSkip,
+                        modifier = Modifier.weight(1f).minimumInteractiveComponentSize(),
+                    ) { Text("✗ SKIP") }
+                } else if (skipSelected) {
+                    OutlinedButton(
+                        onClick = onCheckIn,
+                        modifier = Modifier.weight(1f).minimumInteractiveComponentSize(),
+                    ) { Text("✓ YES") }
+                    Button(
+                        onClick = onSkip,
+                        modifier = Modifier.weight(1f).minimumInteractiveComponentSize(),
+                    ) { Text("✗ SKIP") }
+                } else {
+                    // No log yet — both equal
+                    OutlinedButton(
+                        onClick = onCheckIn,
+                        modifier = Modifier.weight(1f).minimumInteractiveComponentSize(),
+                    ) { Text("✓ YES") }
+                    OutlinedButton(
+                        onClick = onSkip,
+                        modifier = Modifier.weight(1f).minimumInteractiveComponentSize(),
+                    ) { Text("✗ SKIP") }
                 }
             }
         }
