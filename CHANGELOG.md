@@ -5,6 +5,44 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [Milestone 4] - 2026-04-06 — Daily Check-In Loop
+
+Core daily interaction: logging check-ins, viewing streak history, and editing past entries.
+
+### Added
+- `LogDailyCheckInUseCase` — validates and upserts daily check-ins; enforces date bounds, mood range, and active-experiment guard
+- `CheckInScreen` — full check-in UI with completion buttons, 1–5 mood rating, and notes input; supports both new log and edit (UPSERT) flows
+- `CheckInViewModel` — manages form state and async status as separate flows; handles back-fill via optional `date` nav argument
+- `CheckInDisplayState` — stable display data (experiment action, editing state, date) held separately from async `CheckInUiState`
+- `StreakDisplay` component — row of colored squares on `ExperimentCard` showing one dot per day: full-opacity primary for today (unlogged), 60% primary for completed, `outlineVariant` for skipped/no log, 40% alpha for future days
+- `GetActiveExperimentsWithLogsUseCase` — reactively combines experiments flow with each experiment's logs flow using `flatMapLatest` + `combine`
+- `ExperimentWithLogs` domain model — groups `Experiment`, its full log list, and today's log for convenient card rendering
+- `FakeDailyLogRepository` — instrumented-test double with `seedLog` helper
+- `CheckInScreenTest` — 13 instrumented Compose UI tests covering title, prompts, YES/SKIP buttons, mood star states, tap-to-clear, and successful submit
+- `LogDailyCheckInUseCaseTest` — unit tests covering happy path, date validation, mood bounds, and back-fill
+
+### Changed
+- `ExperimentCard` — accepts `ExperimentWithLogs` instead of `Experiment`; shows `StreakDisplay`; displays "Edit Log" button (full-width, outlined) when today is already logged; both YES and SKIP are equally styled (outlined) before logging — no nudge toward YES
+- `HomeViewModel` — switched from `GetActiveExperimentsUseCase` to `GetActiveExperimentsWithLogsUseCase`
+- `HomeUiState` — added `Error` variant; flow now emits it via `.catch {}` instead of silently hanging on DB failure
+- `HomeScreen` — handles `HomeUiState.Error` with a user-facing message
+- `HomeScreenTest` — updated setUp to use `GetActiveExperimentsWithLogsUseCase` and `FakeDailyLogRepository`
+- `CheckInUiState` — `Ready` and `Error` variants no longer carry display fields; `Error` carries only a message string; `onErrorDismissed` simplified to one line
+
+### Fixed
+- Silent loading hang when `getActiveExperiments()` flow threw — now surfaces as `HomeUiState.Error`
+- YES/SKIP buttons on `ExperimentCard` previously misled the user about today's log status; now corrected via `todayLog` from `ExperimentWithLogs`
+- Three redundant `when` blocks in `CheckInScreen` replaced by a single `displayState` flow
+
+### Accessibility
+- `StreakDisplay` — `semantics { contentDescription }` on the `FlowRow` announces completion count as text ("X completed out of Y days so far"); individual dots are decorative
+- Mood stars — each `IconButton` has a `contentDescription` describing filled/empty state; the currently selected star appends ", tap to clear"
+
+### Other
+- `.kotlin/` added to `.gitignore` (Kotlin compiler session files)
+
+---
+
 ## [Milestone 3] - 2026-04-04 — Create & View Experiments
 
 First usable feature: a user can create an experiment and see it on the home screen.
