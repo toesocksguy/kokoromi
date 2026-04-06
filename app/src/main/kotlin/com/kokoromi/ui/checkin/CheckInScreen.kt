@@ -41,6 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kokoromi.util.Constants
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,6 +75,13 @@ fun CheckInScreen(
         is CheckInUiState.Error -> state.isEditing
         else -> false
     }
+    val checkInDate = when (val state = uiState) {
+        is CheckInUiState.Ready -> state.checkInDate
+        is CheckInUiState.Error -> state.checkInDate
+        else -> LocalDate.now()
+    }
+    val isToday = checkInDate == LocalDate.now()
+    val dateLabel = if (isToday) "today" else checkInDate.format(DateTimeFormatter.ofPattern("MMM d"))
 
     Scaffold(
         topBar = {
@@ -113,7 +122,7 @@ fun CheckInScreen(
                     verticalArrangement = Arrangement.spacedBy(20.dp),
                 ) {
                     Text(
-                        text = if (isEditing) "Edit today's log" else "Did you do it today?",
+                        text = if (isEditing) "Edit log for $dateLabel" else "Did you do it $dateLabel?",
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

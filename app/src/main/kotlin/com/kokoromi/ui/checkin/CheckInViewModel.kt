@@ -24,9 +24,9 @@ data class CheckInFormState(
 
 sealed interface CheckInUiState {
     data object Loading : CheckInUiState
-    data class Ready(val experimentAction: String, val isEditing: Boolean) : CheckInUiState
+    data class Ready(val experimentAction: String, val isEditing: Boolean, val checkInDate: LocalDate) : CheckInUiState
     data object Saved : CheckInUiState
-    data class Error(val message: String, val experimentAction: String, val isEditing: Boolean = false) : CheckInUiState
+    data class Error(val message: String, val experimentAction: String, val isEditing: Boolean = false, val checkInDate: LocalDate = LocalDate.now()) : CheckInUiState
 }
 
 @HiltViewModel
@@ -39,6 +39,8 @@ class CheckInViewModel @Inject constructor(
 
     private val experimentId: String = checkNotNull(savedStateHandle["experimentId"])
     private val initialCompleted: Boolean = checkNotNull(savedStateHandle["initialCompleted"])
+    private val checkInDate: LocalDate = savedStateHandle.get<String>("date")
+        ?.let { LocalDate.parse(it) } ?: LocalDate.now()
 
     private val _uiState = MutableStateFlow<CheckInUiState>(CheckInUiState.Loading)
     val uiState: StateFlow<CheckInUiState> = _uiState.asStateFlow()
@@ -56,7 +58,7 @@ class CheckInViewModel @Inject constructor(
                 )
                 return@launch
             }
-            val existingLog = dailyLogRepository.getLogForDate(experimentId, LocalDate.now())
+            val existingLog = dailyLogRepository.getLogForDate(experimentId, checkInDate)
             _form.value = CheckInFormState(
                 completed = existingLog?.completed ?: initialCompleted,
                 mood = existingLog?.moodAfter,
@@ -65,6 +67,7 @@ class CheckInViewModel @Inject constructor(
             _uiState.value = CheckInUiState.Ready(
                 experimentAction = experiment.action.displayFormat(),
                 isEditing = existingLog != null,
+                checkInDate = checkInDate,
             )
         }
     }
@@ -88,7 +91,7 @@ class CheckInViewModel @Inject constructor(
         viewModelScope.launch {
             logDailyCheckIn(
                 experimentId = experimentId,
-                date = LocalDate.now(),
+                date = checkInDate,
                 completed = f.completed,
                 moodBefore = null,
                 moodAfter = f.mood,
@@ -110,6 +113,7 @@ class CheckInViewModel @Inject constructor(
         _uiState.value = CheckInUiState.Ready(
             experimentAction = error?.experimentAction ?: "",
             isEditing = error?.isEditing ?: false,
+            checkInDate = error?.checkInDate ?: checkInDate,
         )
     }
 

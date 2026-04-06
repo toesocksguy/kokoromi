@@ -127,6 +127,8 @@ Settings Screen
   - Progress: "Day X of Y"
   - Streak display with gaps (visual)
   - [✓ YES] [✗ SKIP] buttons
+    - **Before logging**: both buttons should appear visually identical (same style, no implied default) — there's no "right answer" yet and we don't want to nudge the user toward YES
+    - **After logging**: reflect the logged state (e.g. YES highlighted if completed, SKIP highlighted if skipped) — implement as part of `StreakDisplay` when today's log status is available on the card
   - Tap card to see details
 - **Create Experiment Button**:
   - Shown below experiment cards when fewer than 2 experiments are active

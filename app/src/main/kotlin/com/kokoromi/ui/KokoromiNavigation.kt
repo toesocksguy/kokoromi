@@ -9,13 +9,16 @@ import androidx.navigation.navArgument
 import com.kokoromi.ui.checkin.CheckInScreen
 import com.kokoromi.ui.create.CreateExperimentScreen
 import com.kokoromi.ui.home.HomeScreen
+import java.time.LocalDate
 
 sealed class Screen(val route: String) {
     object Home : Screen("home")
     object CreateExperiment : Screen("create_experiment")
-    object CheckIn : Screen("check_in/{experimentId}/{initialCompleted}") {
-        fun route(experimentId: String, initialCompleted: Boolean) =
-            "check_in/$experimentId/$initialCompleted"
+    object CheckIn : Screen("check_in/{experimentId}/{initialCompleted}?date={date}") {
+        fun route(experimentId: String, initialCompleted: Boolean, date: LocalDate? = null): String {
+            val base = "check_in/$experimentId/$initialCompleted"
+            return if (date != null) "$base?date=$date" else base
+        }
     }
     // object Reflection : Screen("reflection")
     // object Archive : Screen("archive")
@@ -48,6 +51,7 @@ fun KokoromiNavigation() {
             arguments = listOf(
                 navArgument("experimentId") { type = NavType.StringType },
                 navArgument("initialCompleted") { type = NavType.BoolType },
+                navArgument("date") { type = NavType.StringType; nullable = true; defaultValue = null },
             ),
         ) {
             CheckInScreen(onBack = { navController.popBackStack() })
