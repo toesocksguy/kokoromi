@@ -2,6 +2,7 @@ package com.kokoromi.domain.usecase
 
 import com.kokoromi.data.repository.DailyLogRepository
 import com.kokoromi.data.repository.ExperimentRepository
+import com.kokoromi.domain.model.ExperimentStatus
 import com.kokoromi.domain.model.ExperimentWithLogs
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -16,7 +17,8 @@ class GetActiveExperimentsWithLogsUseCase @Inject constructor(
     private val dailyLogRepository: DailyLogRepository,
 ) {
     operator fun invoke(): Flow<List<ExperimentWithLogs>> =
-        experimentRepository.getActiveExperiments()
+        experimentRepository.getAllExperiments()
+            .map { all -> all.filter { it.status == ExperimentStatus.ACTIVE || it.status == ExperimentStatus.PAUSED } }
             .flatMapLatest { experiments ->
                 if (experiments.isEmpty()) {
                     flowOf(emptyList())
