@@ -2,9 +2,10 @@ package com.kokoromi.data.repository
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import com.kokoromi.data.model.ThemePreference
 import com.kokoromi.data.model.UserPreferences
 import com.kokoromi.util.Constants
 import kotlinx.coroutines.flow.Flow
@@ -17,13 +18,13 @@ class DefaultPreferencesRepository @Inject constructor(
 ) : PreferencesRepository {
 
     private val reflectionDayKey = intPreferencesKey(Constants.PREF_REFLECTION_DAY)
-    private val useSystemThemeKey = booleanPreferencesKey(Constants.PREF_USE_SYSTEM_THEME)
+    private val themeKey = stringPreferencesKey(Constants.PREF_THEME)
 
     override fun getUserPreferences(): Flow<UserPreferences> {
         return dataStore.data.map { prefs ->
             UserPreferences(
                 reflectionDay = DayOfWeek.of(prefs[reflectionDayKey] ?: DayOfWeek.SUNDAY.value),
-                useSystemTheme = prefs[useSystemThemeKey] ?: true
+                theme = prefs[themeKey]?.let { ThemePreference.valueOf(it) } ?: ThemePreference.SYSTEM,
             )
         }
     }
@@ -32,7 +33,7 @@ class DefaultPreferencesRepository @Inject constructor(
         dataStore.edit { prefs -> prefs[reflectionDayKey] = day.value }
     }
 
-    override suspend fun setUseSystemTheme(useSystem: Boolean) {
-        dataStore.edit { prefs -> prefs[useSystemThemeKey] = useSystem }
+    override suspend fun setTheme(theme: ThemePreference) {
+        dataStore.edit { prefs -> prefs[themeKey] = theme.name }
     }
 }

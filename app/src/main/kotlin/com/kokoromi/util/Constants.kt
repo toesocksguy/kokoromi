@@ -25,5 +25,5 @@ object Constants {
 
     // Preferences keys
     const val PREF_REFLECTION_DAY = "reflection_day"
-    const val PREF_USE_SYSTEM_THEME = "use_system_theme"
+    const val PREF_THEME = "theme"
 }
