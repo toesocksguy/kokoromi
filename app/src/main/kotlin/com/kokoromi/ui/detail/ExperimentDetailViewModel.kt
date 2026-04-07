@@ -53,9 +53,10 @@ class ExperimentDetailViewModel @Inject constructor(
 
     private val experimentId: String = checkNotNull(savedStateHandle["experimentId"])
 
+    private data class DialogState(val showPause: Boolean = false, val showArchive: Boolean = false)
+
     private val _completion = MutableStateFlow<Completion?>(null)
-    private val _showPauseDialog = MutableStateFlow(false)
-    private val _showArchiveDialog = MutableStateFlow(false)
+    private val _dialogState = MutableStateFlow(DialogState())
 
     init {
         viewModelScope.launch {
@@ -68,9 +69,8 @@ class ExperimentDetailViewModel @Inject constructor(
         dailyLogRepository.getLogsForExperiment(experimentId),
         reflectionRepository.getReflectionsForExperiment(experimentId),
         _completion,
-        _showPauseDialog,
-        _showArchiveDialog,
-    ) { experiment, logs, reflections, completion, showPauseDialog, showArchiveDialog ->
+        _dialogState,
+    ) { experiment, logs, reflections, completion, dialog ->
         if (experiment == null) {
             ExperimentDetailUiState.Error("Experiment not found")
         } else {
@@ -80,8 +80,8 @@ class ExperimentDetailViewModel @Inject constructor(
                 reflections = reflections.sortedByDescending { it.reflectionDate },
                 completion = completion,
                 stats = computeStats(experiment, logs),
-                showPauseDialog = showPauseDialog,
-                showArchiveDialog = showArchiveDialog,
+                showPauseDialog = dialog.showPause,
+                showArchiveDialog = dialog.showArchive,
             )
         }
     }
@@ -92,23 +92,23 @@ class ExperimentDetailViewModel @Inject constructor(
             initialValue = ExperimentDetailUiState.Loading,
         )
 
-    fun onPauseRequested() = _showPauseDialog.update { true }
+    fun onPauseRequested() = _dialogState.update { it.copy(showPause = true) }
 
-    fun onPauseDismissed() = _showPauseDialog.update { false }
+    fun onPauseDismissed() = _dialogState.update { it.copy(showPause = false) }
 
     fun onPauseConfirmed() {
-        _showPauseDialog.update { false }
+        _dialogState.update { it.copy(showPause = false) }
         viewModelScope.launch {
             updateExperimentStatus.pause(experimentId)
         }
     }
 
-    fun onArchiveRequested() = _showArchiveDialog.update { true }
+    fun onArchiveRequested() = _dialogState.update { it.copy(showArchive = true) }
 
-    fun onArchiveDismissed() = _showArchiveDialog.update { false }
+    fun onArchiveDismissed() = _dialogState.update { it.copy(showArchive = false) }
 
     fun onArchiveConfirmed() {
-        _showArchiveDialog.update { false }
+        _dialogState.update { it.copy(showArchive = false) }
         viewModelScope.launch {
             updateExperimentStatus.archive(experimentId)
         }
