@@ -5,6 +5,45 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [Milestone 5] - 2026-04-06 — Experiment Lifecycle & Completion
+
+Experiment auto-transition on app open, completion decision screen (Persist/Pivot/Pause), and all supporting use cases.
+
+### Added
+- `CheckExperimentLifecycleUseCase` — runs on app open; auto-transitions ACTIVE → COMPLETED for any experiment whose `endDate` is in the past
+- `ComputeCompletionStatsUseCase` — computes `totalDays`, `daysLogged`, `daysCompleted`, `completionRate`, and `avgMoodAfter` from an experiment's logs
+- `CompleteExperimentUseCase` — three decision paths: `persist()` (archive + start new identical round), `pivot()` (archive + navigate to create), `pause()` (archive, no follow-up)
+- `UpdateExperimentStatusUseCase` — `pause()` / `resume()` mid-experiment transitions with slot guard on resume
+- `CompletionStats` domain model — stats data class produced by `ComputeCompletionStatsUseCase`
+- `ExperimentWithLogs` domain model — groups `Experiment` with its full log list and today's log
+- `GetActiveExperimentsWithLogsUseCase` — reactive flow combining experiments with per-experiment logs via `flatMapLatest` + `combine`
+- `CompletionScreen` — end-of-experiment decision screen: summary card (dates, completion rate, hypothesis), learnings field, steering sheet (external + internal signal inputs), and PERSIST/PIVOT/PAUSE decision buttons
+- `CompletionViewModel` — loads experiment + stats on init; manages form state; dispatches to `CompleteExperimentUseCase`; navigates on decision
+- `CheckExperimentLifecycleUseCaseTest` — 6 unit tests covering expired, active, and mixed experiment lists
+- `ComputeCompletionStatsUseCaseTest` — 9 unit tests covering all stats fields, null mood handling, and empty log set
+- `CompleteExperimentUseCaseTest` — 14 unit tests covering all three decision paths, slot cap guard, not-found guard, learnings trimming, and side-effect verification
+
+### Changed
+- `HomeViewModel` — runs lifecycle check in `init`; `uiState` now combines active + completed experiments via `combine`
+- `HomeUiState.Success` — added `completedExperiments: List<Experiment>` for banner display
+- `HomeScreen` — shows `CompletionBanner` for each completed experiment; empty state now requires both lists to be empty
+- `ExperimentDao` — added `getCompletedExperiments()` query
+- `ExperimentRepository` / `DefaultExperimentRepository` — added `getCompletedExperiments(): Flow<List<Experiment>>`
+- `FakeExperimentRepository` — implemented `getCompletedExperiments()`
+- `KokoromiNavigation` — added `Screen.Completion` route; wired banner tap and post-decision navigation (persist/pause → home, pivot → create)
+- `HomeScreenTest` — updated for new `HomeViewModel` constructor and `onNavigateToCompletion` parameter
+
+### Accessibility
+- `CompletionScreen` decision buttons — each has a `contentDescription` describing the consequence (e.g. "Persist: start a new round of this experiment")
+- `SummaryCard` — `semantics(mergeDescendants = true)` so TalkBack reads it as a single unit
+
+### Deferred to M7
+- Pivot pre-fill: `CreateExperimentScreen` currently opens blank after PIVOT; pre-filling with the old experiment's data is deferred
+- `CompletionButtons` layout swap in `CheckInScreen`
+- Pause/early-exit mid-experiment dialogs (require `ExperimentDetail` as entry point)
+
+---
+
 ## [Milestone 4] - 2026-04-06 — Daily Check-In Loop
 
 Core daily interaction: logging check-ins, viewing streak history, and editing past entries.

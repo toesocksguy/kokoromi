@@ -18,4 +18,17 @@ interface ReflectionDao {
 
     @Query("SELECT * FROM reflections WHERE experiment_id = :experimentId ORDER BY reflection_date DESC LIMIT 1")
     suspend fun getLatestReflection(experimentId: String): ReflectionEntity?
+
+    @Query("""
+        SELECT * FROM reflections
+        WHERE experiment_id = :experimentId
+          AND reflection_date >= :startDate
+          AND reflection_date <= :endDate
+        LIMIT 1
+    """)
+    suspend fun getReflectionInRange(
+        experimentId: String,
+        startDate: String,
+        endDate: String,
+    ): ReflectionEntity?
 }
