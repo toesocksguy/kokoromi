@@ -34,6 +34,19 @@ class UpdateExperimentStatusUseCase @Inject constructor(
         }
     }
 
+    suspend fun endEarly(experimentId: String): Result<Unit> {
+        val experiment = experimentRepository.getExperiment(experimentId)
+            ?: return Result.failure(IllegalArgumentException("Experiment not found: $experimentId"))
+
+        if (experiment.status != ExperimentStatus.ACTIVE) {
+            return Result.failure(IllegalStateException("Only ACTIVE experiments can be ended early"))
+        }
+
+        return runCatching {
+            experimentRepository.updateExperimentStatus(experimentId, ExperimentStatus.COMPLETED)
+        }
+    }
+
     suspend fun resume(experimentId: String): Result<Unit> {
         val experiment = experimentRepository.getExperiment(experimentId)
             ?: return Result.failure(IllegalArgumentException("Experiment not found: $experimentId"))

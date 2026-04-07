@@ -136,7 +136,12 @@ fun KokoromiNavigation() {
                 navArgument("experimentId") { type = NavType.StringType },
             ),
         ) {
-            ExperimentDetailScreen(onBack = { navController.popBackStack() })
+            ExperimentDetailScreen(
+                onBack = { navController.popBackStack() },
+                onNavigateToCompletion = { experimentId ->
+                    navController.navigate(Screen.Completion.route(experimentId))
+                },
+            )
         }
         composable(Screen.Archive.route) {
             ArchiveScreen(

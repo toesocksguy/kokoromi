@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,9 +47,16 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun ExperimentDetailScreen(
     onBack: () -> Unit,
+    onNavigateToCompletion: (experimentId: String) -> Unit,
     viewModel: ExperimentDetailViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.navigateToCompletion.collect { experimentId ->
+            onNavigateToCompletion(experimentId)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -102,6 +110,7 @@ fun ExperimentDetailScreen(
                     state = state,
                     onPauseRequested = viewModel::onPauseRequested,
                     onArchiveRequested = viewModel::onArchiveRequested,
+                    onEndEarlyRequested = viewModel::onEndEarlyRequested,
                     modifier = Modifier.padding(innerPadding),
                 )
 
@@ -132,6 +141,21 @@ fun ExperimentDetailScreen(
                         },
                     )
                 }
+
+                if (state.showEndEarlyDialog) {
+                    val daysLeft = java.time.LocalDate.now().until(state.experiment.endDate, java.time.temporal.ChronoUnit.DAYS)
+                    AlertDialog(
+                        onDismissRequest = viewModel::onEndEarlyDismissed,
+                        title = { Text("End experiment early?") },
+                        text = { Text("You still have $daysLeft day${if (daysLeft == 1L) "" else "s"} left. You'll be taken to the completion screen to record your decision.") },
+                        confirmButton = {
+                            TextButton(onClick = viewModel::onEndEarlyConfirmed) { Text("End Experiment") }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = viewModel::onEndEarlyDismissed) { Text("Cancel") }
+                        },
+                    )
+                }
             }
         }
     }
@@ -142,6 +166,7 @@ private fun DetailContent(
     state: ExperimentDetailUiState.Success,
     onPauseRequested: () -> Unit,
     onArchiveRequested: () -> Unit,
+    onEndEarlyRequested: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val experiment = state.experiment
@@ -264,13 +289,25 @@ private fun DetailContent(
         // Action buttons by status
         when (experiment.status) {
             ExperimentStatus.ACTIVE -> item {
-                OutlinedButton(
-                    onClick = onPauseRequested,
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 16.dp)
-                        .semantics { contentDescription = "Pause experiment" },
-                ) { Text("Pause Experiment") }
+                        .padding(horizontal = 16.dp, vertical = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    OutlinedButton(
+                        onClick = onPauseRequested,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .semantics { contentDescription = "Pause experiment" },
+                    ) { Text("Pause Experiment") }
+                    OutlinedButton(
+                        onClick = onEndEarlyRequested,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .semantics { contentDescription = "End experiment early" },
+                    ) { Text("End Experiment") }
+                }
             }
             ExperimentStatus.PAUSED -> item {
                 OutlinedButton(

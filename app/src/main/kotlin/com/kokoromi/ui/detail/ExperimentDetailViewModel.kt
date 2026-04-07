@@ -15,12 +15,14 @@ import com.kokoromi.domain.model.ExperimentStatus
 import com.kokoromi.domain.model.Reflection
 import com.kokoromi.domain.usecase.UpdateExperimentStatusUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -37,6 +39,7 @@ sealed interface ExperimentDetailUiState {
         val stats: CompletionStats,
         val showPauseDialog: Boolean = false,
         val showArchiveDialog: Boolean = false,
+        val showEndEarlyDialog: Boolean = false,
     ) : ExperimentDetailUiState
     data class Error(val message: String) : ExperimentDetailUiState
 }
@@ -53,10 +56,16 @@ class ExperimentDetailViewModel @Inject constructor(
 
     private val experimentId: String = checkNotNull(savedStateHandle["experimentId"])
 
-    private data class DialogState(val showPause: Boolean = false, val showArchive: Boolean = false)
+    private data class DialogState(
+        val showPause: Boolean = false,
+        val showArchive: Boolean = false,
+        val showEndEarly: Boolean = false,
+    )
 
     private val _completion = MutableStateFlow<Completion?>(null)
     private val _dialogState = MutableStateFlow(DialogState())
+    private val _events = Channel<String>(Channel.BUFFERED) // experimentId to navigate to completion
+    val navigateToCompletion = _events.receiveAsFlow()
 
     init {
         viewModelScope.launch {
@@ -82,6 +91,7 @@ class ExperimentDetailViewModel @Inject constructor(
                 stats = computeStats(experiment, logs),
                 showPauseDialog = dialog.showPause,
                 showArchiveDialog = dialog.showArchive,
+                showEndEarlyDialog = dialog.showEndEarly,
             )
         }
     }
@@ -111,6 +121,19 @@ class ExperimentDetailViewModel @Inject constructor(
         _dialogState.update { it.copy(showArchive = false) }
         viewModelScope.launch {
             updateExperimentStatus.archive(experimentId)
+        }
+    }
+
+    fun onEndEarlyRequested() = _dialogState.update { it.copy(showEndEarly = true) }
+
+    fun onEndEarlyDismissed() = _dialogState.update { it.copy(showEndEarly = false) }
+
+    fun onEndEarlyConfirmed() {
+        _dialogState.update { it.copy(showEndEarly = false) }
+        viewModelScope.launch {
+            updateExperimentStatus.endEarly(experimentId).onSuccess {
+                _events.send(experimentId)
+            }
         }
     }
 
