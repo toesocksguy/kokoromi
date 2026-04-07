@@ -1,9 +1,7 @@
 package com.kokoromi.ui.settings
 
-import android.content.Intent
-import androidx.core.content.FileProvider
-import java.io.File
-import java.time.Instant
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -54,21 +52,24 @@ fun SettingsScreen(
     val context = LocalContext.current
     var showReflectionDayPicker by remember { mutableStateOf(false) }
     var showDeleteConfirm by remember { mutableStateOf(false) }
+    var pendingExportJson by remember { mutableStateOf<String?>(null) }
+
+    val createDocumentLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json")
+    ) { uri ->
+        val json = pendingExportJson ?: return@rememberLauncherForActivityResult
+        if (uri != null) {
+            context.contentResolver.openOutputStream(uri)?.use { it.write(json.toByteArray()) }
+        }
+        pendingExportJson = null
+    }
 
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             when (event) {
                 is SettingsEvent.ExportReady -> {
-                    val exportsDir = File(context.cacheDir, "exports").also { it.mkdirs() }
-                    val file = File(exportsDir, "kokoromi_export_${Instant.now().epochSecond}.json")
-                    file.writeText(event.json)
-                    val uri = FileProvider.getUriForFile(context, "com.kokoromi.fileprovider", file)
-                    val intent = Intent(Intent.ACTION_SEND).apply {
-                        type = "application/json"
-                        putExtra(Intent.EXTRA_STREAM, uri)
-                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    }
-                    context.startActivity(Intent.createChooser(intent, "Export data"))
+                    pendingExportJson = event.json
+                    createDocumentLauncher.launch("kokoromi_export.json")
                 }
                 is SettingsEvent.DataCleared -> {
                     snackbarHostState.showSnackbar("All data deleted")
