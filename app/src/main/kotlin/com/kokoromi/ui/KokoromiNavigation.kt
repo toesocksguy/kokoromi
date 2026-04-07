@@ -11,6 +11,8 @@ import com.kokoromi.ui.completion.CompletionScreen
 import com.kokoromi.ui.create.CreateExperimentScreen
 import com.kokoromi.ui.detail.ExperimentDetailScreen
 import com.kokoromi.ui.home.HomeScreen
+import com.kokoromi.ui.notes.AddEditNoteScreen
+import com.kokoromi.ui.notes.FieldNotesScreen
 import com.kokoromi.ui.reflection.ReflectionScreen
 import java.time.LocalDate
 
@@ -31,6 +33,11 @@ sealed class Screen(val route: String) {
     }
     object ExperimentDetail : Screen("experiment_detail/{experimentId}") {
         fun route(experimentId: String) = "experiment_detail/$experimentId"
+    }
+    object FieldNotes : Screen("field_notes")
+    object AddEditNote : Screen("add_edit_note?noteId={noteId}") {
+        fun route(noteId: String? = null) =
+            if (noteId != null) "add_edit_note?noteId=$noteId" else "add_edit_note"
     }
     // object Archive : Screen("archive")
     // object Settings : Screen("settings")
@@ -111,6 +118,20 @@ fun KokoromiNavigation() {
             ),
         ) {
             ExperimentDetailScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Screen.FieldNotes.route) {
+            FieldNotesScreen(
+                onCreateNote = { navController.navigate(Screen.AddEditNote.route()) },
+                onOpenNote = { noteId -> navController.navigate(Screen.AddEditNote.route(noteId)) },
+            )
+        }
+        composable(
+            route = Screen.AddEditNote.route,
+            arguments = listOf(
+                navArgument("noteId") { type = NavType.StringType; nullable = true; defaultValue = null },
+            ),
+        ) {
+            AddEditNoteScreen(onBack = { navController.popBackStack() })
         }
     }
 }
