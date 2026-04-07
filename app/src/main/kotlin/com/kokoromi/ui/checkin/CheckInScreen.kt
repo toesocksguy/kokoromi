@@ -173,16 +173,19 @@ private fun CompletionButtons(
                 onClick = { onCompletedChange(true) },
                 modifier = Modifier.weight(1f).minimumInteractiveComponentSize(),
             ) { Text("✓ YES") }
-            OutlinedButton(
-                onClick = { onCompletedChange(false) },
-                modifier = Modifier.weight(1f).minimumInteractiveComponentSize(),
-            ) { Text("✗ SKIP") }
         } else {
             OutlinedButton(
                 onClick = { onCompletedChange(true) },
                 modifier = Modifier.weight(1f).minimumInteractiveComponentSize(),
             ) { Text("✓ YES") }
+        }
+        if (!completed) {
             Button(
+                onClick = { onCompletedChange(false) },
+                modifier = Modifier.weight(1f).minimumInteractiveComponentSize(),
+            ) { Text("✗ SKIP") }
+        } else {
+            OutlinedButton(
                 onClick = { onCompletedChange(false) },
                 modifier = Modifier.weight(1f).minimumInteractiveComponentSize(),
             ) { Text("✗ SKIP") }

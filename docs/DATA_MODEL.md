@@ -385,6 +385,13 @@ interface ReflectionRepository {
     
     // Get latest reflection (for experiment completion screen)
     suspend fun getLatestReflection(experimentId: String): Reflection?
+
+    // Check if a reflection exists within a date range (used for weekly prompt logic)
+    suspend fun getReflectionInRange(
+        experimentId: String,
+        startDate: LocalDate,
+        endDate: LocalDate,
+    ): Reflection?
 }
 ```
 
