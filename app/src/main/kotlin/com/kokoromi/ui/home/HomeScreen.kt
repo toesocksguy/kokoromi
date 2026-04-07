@@ -192,6 +192,59 @@ private fun CompletionBanner(
 }
 
 @Composable
+private fun ReflectionPromptCard(
+    prompt: ReflectionPromptState,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val dateFmt = DateTimeFormatter.ofPattern("MMM d")
+    val weekRange = "${prompt.weekStart.format(dateFmt)} – ${prompt.weekEnd.format(dateFmt)}"
+    val name = prompt.experimentName.trim().trimEnd('.', ',', '!', '?', ';', ':')
+        .replaceFirstChar { it.uppercase() }
+
+    Surface(
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        shape = RoundedCornerShape(12.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .clickable(onClick = onClick)
+            .semantics {
+                contentDescription = "Time to reflect on $name. Week of $weekRange. Tap to open."
+            },
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Time to reflect",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                )
+                Text(
+                    text = name,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                )
+                Text(
+                    text = "Week of $weekRange",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                )
+            }
+            Text(
+                text = "Reflect →",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+            )
+        }
+    }
+}
+
+@Composable
 private fun EmptyState(
     onCreateExperiment: () -> Unit,
     modifier: Modifier = Modifier,
