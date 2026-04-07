@@ -2,8 +2,10 @@ package com.kokoromi.di
 
 import com.kokoromi.data.repository.CompletionRepository
 import com.kokoromi.data.repository.DailyLogRepository
+import com.kokoromi.data.repository.DatabaseCleaner
 import com.kokoromi.data.repository.DefaultCompletionRepository
 import com.kokoromi.data.repository.DefaultDailyLogRepository
+import com.kokoromi.data.repository.DefaultDatabaseCleaner
 import com.kokoromi.data.repository.DefaultExperimentRepository
 import com.kokoromi.data.repository.DefaultFieldNoteRepository
 import com.kokoromi.data.repository.DefaultReflectionRepository
@@ -44,4 +46,9 @@ abstract class RepositoryModule {
     abstract fun bindFieldNoteRepository(
         impl: DefaultFieldNoteRepository
     ): FieldNoteRepository
+
+    @Binds @Singleton
+    abstract fun bindDatabaseCleaner(
+        impl: DefaultDatabaseCleaner
+    ): DatabaseCleaner
 }
