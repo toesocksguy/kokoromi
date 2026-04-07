@@ -132,7 +132,7 @@ fun ExperimentDetailScreen(
                     AlertDialog(
                         onDismissRequest = viewModel::onPauseDismissed,
                         title = { Text("Pause experiment?") },
-                        text = { Text("Your data will be saved. You can resume when you're ready, as long as a slot is available.") },
+                        text = { Text("Your data will be saved. You can resume from the Archive screen when you're ready, as long as a slot is available.") },
                         confirmButton = {
                             TextButton(onClick = viewModel::onPauseConfirmed) { Text("Pause") }
                         },
