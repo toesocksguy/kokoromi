@@ -15,6 +15,7 @@ import com.kokoromi.ui.home.HomeScreen
 import com.kokoromi.ui.notes.AddEditNoteScreen
 import com.kokoromi.ui.notes.FieldNotesScreen
 import com.kokoromi.ui.reflection.ReflectionScreen
+import com.kokoromi.ui.settings.SettingsScreen
 import java.time.LocalDate
 
 sealed class Screen(val route: String) {
@@ -41,7 +42,7 @@ sealed class Screen(val route: String) {
             if (noteId != null) "add_edit_note?noteId=$noteId" else "add_edit_note"
     }
     object Archive : Screen("archive")
-    // object Settings : Screen("settings")
+    object Settings : Screen("settings")
 }
 
 @Composable
@@ -126,6 +127,9 @@ fun KokoromiNavigation() {
                     navController.navigate(Screen.ExperimentDetail.route(experimentId))
                 },
             )
+        }
+        composable(Screen.Settings.route) {
+            SettingsScreen()
         }
         composable(Screen.FieldNotes.route) {
             FieldNotesScreen(
