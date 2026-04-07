@@ -5,6 +5,41 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [Milestone 6] - 2026-04-07 — Reflections
+
+Weekly Plus-Minus-Next reflection prompts, surfaced on the home screen on the configured day and accessible manually from the check-in screen at any time.
+
+### Added
+- `SaveReflectionUseCase` — validates and persists reflections; requires at least one field; enforces per-field character limit (`REFLECTION_MAX_CHARS = 2000`); trims whitespace and nullifies blank fields
+- `GetReflectionPromptStateUseCase` — determines whether a weekly reflection prompt should be shown for a given experiment on the configured day
+- `ReflectionScreen` — Plus/Minus/Next form with a prompt header; supports loading an existing reflection for the current week (edit flow)
+- `ReflectionViewModel` — loads existing reflection on init; manages form state; calls `SaveReflectionUseCase` on submit
+- `ReflectionPromptCard` — secondary-container banner on `HomeScreen` surfaced on the configured reflection day; taps navigate to `ReflectionScreen`
+- `SaveReflectionUseCaseTest` — 14 unit tests covering happy path (each field in isolation, all three, trimming, blank→null, boundary length), all validation failure cases, and repository failure
+- `FakePreferencesRepository` — instrumented-test double for `PreferencesRepository`
+- `FakeReflectionRepository` — instrumented-test double for `ReflectionRepository`
+
+### Changed
+- `HomeViewModel` — now combines active experiments, completed experiments, and user preferences to compute `reflectionPrompts`; accepts `GetReflectionPromptStateUseCase` and `PreferencesRepository`
+- `HomeUiState.Success` — added `reflectionPrompts: List<ReflectionPromptState>`
+- `HomeScreen` — accepts `onNavigateToReflection` callback; renders `ReflectionPromptCard` per prompt above experiment cards
+- `CheckInScreen` — accepts `onReflect` callback; shows `+ Add a quick reflection for today` text link below LOG ACTIVITY, always visible
+- `KokoromiNavigation` — added `Screen.Reflection` route; wired reflection navigation from both `HomeScreen` and `CheckInScreen`
+- `HomeScreenTest` — updated for new `HomeViewModel` constructor (`GetReflectionPromptStateUseCase`, `FakePreferencesRepository`) and `onNavigateToReflection` parameter
+- `CheckInScreenTest` — updated for new `onReflect` parameter
+
+### Fixed
+- `CompletionButtons` in `CheckInScreen` — YES and SKIP buttons previously swapped their filled/outlined roles by branching the entire composable tree; fixed by giving each button its own independent style conditional, keeping positions stable across recomposition
+
+### Accessibility
+- `PlusMinusNextForm` fields — each input has a clear label for screen readers
+
+### Deferred to M7
+- Past reflections viewable in experiment detail and archive
+- `PreferencesRepository` wired to reflection day setting in `SettingsScreen`
+
+---
+
 ## [Milestone 5] - 2026-04-06 — Experiment Lifecycle & Completion
 
 Experiment auto-transition on app open, completion decision screen (Persist/Pivot/Pause), and all supporting use cases.
