@@ -1,5 +1,6 @@
 package com.kokoromi.ui.home.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,33 +43,40 @@ fun ExperimentCard(
     val cardDescription = "$action, day $dayNumber of $totalDays"
 
     Card(
-        onClick = onTap,
-        modifier = modifier
-            .fillMaxWidth()
-            .semantics { contentDescription = cardDescription },
+        modifier = modifier.fillMaxWidth(),
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(
-                    text = action,
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                Text(
-                    text = "Day $dayNumber of $totalDays",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+            // Tappable header — navigates to detail
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onTap)
+                    .semantics { contentDescription = cardDescription },
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(
+                        text = action,
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Text(
+                        text = "Day $dayNumber of $totalDays",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+
+                StreakDisplay(
+                    startDate = experiment.startDate,
+                    endDate = experiment.endDate,
+                    logs = experimentWithLogs.logs,
                 )
             }
 
-            StreakDisplay(
-                startDate = experiment.startDate,
-                endDate = experiment.endDate,
-                logs = experimentWithLogs.logs,
-            )
-
+            // Action buttons — independent of card tap
             if (todayLog != null) {
                 OutlinedButton(
                     onClick = onCheckIn,
