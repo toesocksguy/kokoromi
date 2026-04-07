@@ -104,6 +104,7 @@ fun HomeScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding)
+                        .verticalScroll(rememberScrollState())
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
@@ -111,6 +112,13 @@ fun HomeScreen(
                         CompletionBanner(
                             experiment = experiment,
                             onClick = { onNavigateToCompletion(experiment.id) },
+                        )
+                    }
+
+                    state.reflectionPrompts.forEach { prompt ->
+                        ReflectionPromptCard(
+                            prompt = prompt,
+                            onClick = { onNavigateToReflection(prompt.experimentId) },
                         )
                     }
 
