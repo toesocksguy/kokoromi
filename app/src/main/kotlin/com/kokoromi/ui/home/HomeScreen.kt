@@ -47,6 +47,7 @@ fun HomeScreen(
     onCheckIn: (experimentId: String, initialCompleted: Boolean) -> Unit,
     onNavigateToCompletion: (experimentId: String) -> Unit,
     onNavigateToReflection: (experimentId: String) -> Unit,
+    onNavigateToDetail: (experimentId: String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -133,6 +134,7 @@ fun HomeScreen(
                                 experimentWithLogs = experimentWithLogs,
                                 onCheckIn = { onCheckIn(experimentWithLogs.experiment.id, true) },
                                 onSkip = { onCheckIn(experimentWithLogs.experiment.id, false) },
+                                onTap = { onNavigateToDetail(experimentWithLogs.experiment.id) },
                             )
                         }
 

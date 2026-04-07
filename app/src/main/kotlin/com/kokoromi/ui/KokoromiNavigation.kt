@@ -9,6 +9,7 @@ import androidx.navigation.navArgument
 import com.kokoromi.ui.checkin.CheckInScreen
 import com.kokoromi.ui.completion.CompletionScreen
 import com.kokoromi.ui.create.CreateExperimentScreen
+import com.kokoromi.ui.detail.ExperimentDetailScreen
 import com.kokoromi.ui.home.HomeScreen
 import com.kokoromi.ui.reflection.ReflectionScreen
 import java.time.LocalDate
@@ -27,6 +28,9 @@ sealed class Screen(val route: String) {
     }
     object Reflection : Screen("reflection/{experimentId}") {
         fun route(experimentId: String) = "reflection/$experimentId"
+    }
+    object ExperimentDetail : Screen("experiment_detail/{experimentId}") {
+        fun route(experimentId: String) = "experiment_detail/$experimentId"
     }
     // object Archive : Screen("archive")
     // object Settings : Screen("settings")
@@ -50,6 +54,9 @@ fun KokoromiNavigation() {
                 },
                 onNavigateToReflection = { experimentId ->
                     navController.navigate(Screen.Reflection.route(experimentId))
+                },
+                onNavigateToDetail = { experimentId ->
+                    navController.navigate(Screen.ExperimentDetail.route(experimentId))
                 },
             )
         }
@@ -96,6 +103,14 @@ fun KokoromiNavigation() {
             ),
         ) {
             ReflectionScreen(onBack = { navController.popBackStack() })
+        }
+        composable(
+            route = Screen.ExperimentDetail.route,
+            arguments = listOf(
+                navArgument("experimentId") { type = NavType.StringType },
+            ),
+        ) {
+            ExperimentDetailScreen(onBack = { navController.popBackStack() })
         }
     }
 }

@@ -25,6 +25,7 @@ fun ExperimentCard(
     experimentWithLogs: ExperimentWithLogs,
     onCheckIn: () -> Unit,
     onSkip: () -> Unit,
+    onTap: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val experiment = experimentWithLogs.experiment
@@ -41,6 +42,7 @@ fun ExperimentCard(
     val cardDescription = "$action, day $dayNumber of $totalDays"
 
     Card(
+        onClick = onTap,
         modifier = modifier
             .fillMaxWidth()
             .semantics { contentDescription = cardDescription },
