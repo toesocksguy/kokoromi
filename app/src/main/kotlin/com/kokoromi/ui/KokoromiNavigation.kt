@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.kokoromi.ui.archive.ArchiveScreen
 import com.kokoromi.ui.checkin.CheckInScreen
 import com.kokoromi.ui.completion.CompletionScreen
 import com.kokoromi.ui.create.CreateExperimentScreen
@@ -39,7 +40,7 @@ sealed class Screen(val route: String) {
         fun route(noteId: String? = null) =
             if (noteId != null) "add_edit_note?noteId=$noteId" else "add_edit_note"
     }
-    // object Archive : Screen("archive")
+    object Archive : Screen("archive")
     // object Settings : Screen("settings")
 }
 
@@ -118,6 +119,13 @@ fun KokoromiNavigation() {
             ),
         ) {
             ExperimentDetailScreen(onBack = { navController.popBackStack() })
+        }
+        composable(Screen.Archive.route) {
+            ArchiveScreen(
+                onNavigateToDetail = { experimentId ->
+                    navController.navigate(Screen.ExperimentDetail.route(experimentId))
+                },
+            )
         }
         composable(Screen.FieldNotes.route) {
             FieldNotesScreen(
