@@ -1,6 +1,9 @@
 package com.kokoromi.ui.settings
 
 import android.content.Intent
+import androidx.core.content.FileProvider
+import java.io.File
+import java.time.Instant
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -56,10 +59,14 @@ fun SettingsScreen(
         viewModel.events.collect { event ->
             when (event) {
                 is SettingsEvent.ExportReady -> {
+                    val exportsDir = File(context.cacheDir, "exports").also { it.mkdirs() }
+                    val file = File(exportsDir, "kokoromi_export_${Instant.now().epochSecond}.json")
+                    file.writeText(event.json)
+                    val uri = FileProvider.getUriForFile(context, "com.kokoromi.fileprovider", file)
                     val intent = Intent(Intent.ACTION_SEND).apply {
                         type = "application/json"
-                        putExtra(Intent.EXTRA_TEXT, event.json)
-                        putExtra(Intent.EXTRA_SUBJECT, "Kokoromi data export")
+                        putExtra(Intent.EXTRA_STREAM, uri)
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     }
                     context.startActivity(Intent.createChooser(intent, "Export data"))
                 }
