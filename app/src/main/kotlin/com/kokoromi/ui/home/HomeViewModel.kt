@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.kokoromi.data.repository.ExperimentRepository
 import com.kokoromi.data.repository.PreferencesRepository
 import com.kokoromi.domain.model.Experiment
+import com.kokoromi.domain.model.ExperimentStatus
 import com.kokoromi.domain.model.ExperimentWithLogs
 import com.kokoromi.domain.usecase.CheckExperimentLifecycleUseCase
 import com.kokoromi.domain.usecase.GetActiveExperimentsWithLogsUseCase
@@ -64,7 +65,7 @@ class HomeViewModel @Inject constructor(
         HomeUiState.Success(
             experiments = active,
             completedExperiments = completed,
-            canCreateExperiment = active.size < Constants.MAX_ACTIVE_EXPERIMENTS,
+            canCreateExperiment = active.count { it.experiment.status == ExperimentStatus.ACTIVE } < Constants.MAX_ACTIVE_EXPERIMENTS,
             reflectionPrompts = prompts,
         ) as HomeUiState
     }

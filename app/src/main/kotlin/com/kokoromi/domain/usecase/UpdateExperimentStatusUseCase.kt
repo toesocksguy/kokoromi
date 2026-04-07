@@ -21,6 +21,19 @@ class UpdateExperimentStatusUseCase @Inject constructor(
         }
     }
 
+    suspend fun archive(experimentId: String): Result<Unit> {
+        val experiment = experimentRepository.getExperiment(experimentId)
+            ?: return Result.failure(IllegalArgumentException("Experiment not found: $experimentId"))
+
+        if (experiment.status != ExperimentStatus.PAUSED) {
+            return Result.failure(IllegalStateException("Only PAUSED experiments can be archived"))
+        }
+
+        return runCatching {
+            experimentRepository.updateExperimentStatus(experimentId, ExperimentStatus.ARCHIVED)
+        }
+    }
+
     suspend fun resume(experimentId: String): Result<Unit> {
         val experiment = experimentRepository.getExperiment(experimentId)
             ?: return Result.failure(IllegalArgumentException("Experiment not found: $experimentId"))
