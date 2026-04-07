@@ -3,6 +3,7 @@ package com.kokoromi.ui.reflection
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kokoromi.data.repository.DailyLogRepository
 import com.kokoromi.data.repository.ExperimentRepository
 import com.kokoromi.data.repository.ReflectionRepository
 import com.kokoromi.domain.usecase.SaveReflectionUseCase
@@ -38,6 +39,7 @@ class ReflectionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val experimentRepository: ExperimentRepository,
     private val reflectionRepository: ReflectionRepository,
+    private val dailyLogRepository: DailyLogRepository,
     private val saveReflection: SaveReflectionUseCase,
 ) : ViewModel() {
 
@@ -52,6 +54,12 @@ class ReflectionViewModel @Inject constructor(
     private val _experimentName = MutableStateFlow("")
     val experimentName: StateFlow<String> = _experimentName.asStateFlow()
 
+    private val _weekDaysCompleted = MutableStateFlow(0)
+    val weekDaysCompleted: StateFlow<Int> = _weekDaysCompleted.asStateFlow()
+
+    private val _weekTotalDays = MutableStateFlow(0)
+    val weekTotalDays: StateFlow<Int> = _weekTotalDays.asStateFlow()
+
     val weekStart: LocalDate = LocalDate.now()
         .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
     val weekEnd: LocalDate = LocalDate.now()
@@ -65,6 +73,14 @@ class ReflectionViewModel @Inject constructor(
                 return@launch
             }
             _experimentName.value = experiment.hypothesis
+
+            val logsThisWeek = dailyLogRepository.getLogsInRange(
+                experimentId = experimentId,
+                startDate = weekStart,
+                endDate = weekEnd,
+            )
+            _weekDaysCompleted.value = logsThisWeek.count { it.completed }
+            _weekTotalDays.value = logsThisWeek.size
 
             val existing = reflectionRepository.getReflectionInRange(
                 experimentId = experimentId,
