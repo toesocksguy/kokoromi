@@ -4,6 +4,7 @@ import com.kokoromi.data.repository.DailyLogRepository
 import com.kokoromi.data.repository.ExperimentRepository
 import com.kokoromi.domain.model.ExperimentStatus
 import com.kokoromi.domain.model.ExperimentWithLogs
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class GetActiveExperimentsWithLogsUseCase @Inject constructor(
     private val experimentRepository: ExperimentRepository,
     private val dailyLogRepository: DailyLogRepository,
