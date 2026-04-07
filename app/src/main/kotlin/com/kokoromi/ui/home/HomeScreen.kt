@@ -19,10 +19,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -48,15 +51,22 @@ fun HomeScreen(
     onNavigateToCompletion: (experimentId: String) -> Unit,
     onNavigateToReflection: (experimentId: String) -> Unit,
     onNavigateToDetail: (experimentId: String) -> Unit,
-    onResume: (experimentId: String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
     val dateLabel = remember {
         LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE, MMMM d"))
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.snackbarMessage.collect { message ->
+            snackbarHostState.showSnackbar(message)
+        }
+    }
+
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = {
@@ -136,7 +146,7 @@ fun HomeScreen(
                                 onCheckIn = { onCheckIn(experimentWithLogs.experiment.id, true) },
                                 onSkip = { onCheckIn(experimentWithLogs.experiment.id, false) },
                                 onTap = { onNavigateToDetail(experimentWithLogs.experiment.id) },
-                                onResume = { /* wired in next task */ },
+                                onResume = { viewModel.onResume(experimentWithLogs.experiment.id) },
                                 canResume = state.canCreateExperiment,
                             )
                         }

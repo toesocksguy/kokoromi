@@ -58,7 +58,6 @@ fun KokoromiNavigation() {
                 onNavigateToDetail = { experimentId ->
                     navController.navigate(Screen.ExperimentDetail.route(experimentId))
                 },
-                onResume = { /* wired in next task */ },
             )
         }
         composable(Screen.CreateExperiment.route) {

@@ -11,12 +11,15 @@ import com.kokoromi.domain.usecase.CheckExperimentLifecycleUseCase
 import com.kokoromi.domain.usecase.GetActiveExperimentsWithLogsUseCase
 import com.kokoromi.domain.usecase.GetReflectionPromptStateUseCase
 import com.kokoromi.domain.usecase.ReflectionPromptState
+import com.kokoromi.domain.usecase.UpdateExperimentStatusUseCase
 import com.kokoromi.util.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -37,15 +40,27 @@ sealed interface HomeUiState {
 class HomeViewModel @Inject constructor(
     private val checkExperimentLifecycle: CheckExperimentLifecycleUseCase,
     private val getReflectionPromptState: GetReflectionPromptStateUseCase,
+    private val updateExperimentStatus: UpdateExperimentStatusUseCase,
     getActiveExperimentsWithLogs: GetActiveExperimentsWithLogsUseCase,
     experimentRepository: ExperimentRepository,
     preferencesRepository: PreferencesRepository,
 ) : ViewModel() {
 
+    private val _snackbarMessage = Channel<String>(Channel.BUFFERED)
+    val snackbarMessage = _snackbarMessage.receiveAsFlow()
+
     init {
         viewModelScope.launch {
             runCatching { checkExperimentLifecycle() }
                 .onFailure { Timber.e(it, "Lifecycle check failed") }
+        }
+    }
+
+    fun onResume(experimentId: String) {
+        viewModelScope.launch {
+            updateExperimentStatus.resume(experimentId).onFailure {
+                _snackbarMessage.send("Can't resume — both slots are active.")
+            }
         }
     }
 
