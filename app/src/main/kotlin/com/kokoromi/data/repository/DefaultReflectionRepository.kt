@@ -25,6 +25,18 @@ class DefaultReflectionRepository @Inject constructor(
         return reflectionDao.getLatestReflection(experimentId)?.toDomain()
     }
 
+    override suspend fun getReflectionInRange(
+        experimentId: String,
+        startDate: java.time.LocalDate,
+        endDate: java.time.LocalDate,
+    ): Reflection? {
+        return reflectionDao.getReflectionInRange(
+            experimentId = experimentId,
+            startDate = startDate.toString(),
+            endDate = endDate.toString(),
+        )?.toDomain()
+    }
+
     // --- Mapping ---
 
     private fun Reflection.toEntity() = ReflectionEntity(

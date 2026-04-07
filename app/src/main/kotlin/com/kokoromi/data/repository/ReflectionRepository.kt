@@ -7,4 +7,9 @@ interface ReflectionRepository {
     suspend fun saveReflection(reflection: Reflection)
     fun getReflectionsForExperiment(experimentId: String): Flow<List<Reflection>>
     suspend fun getLatestReflection(experimentId: String): Reflection?
+    suspend fun getReflectionInRange(
+        experimentId: String,
+        startDate: java.time.LocalDate,
+        endDate: java.time.LocalDate,
+    ): Reflection?
 }
