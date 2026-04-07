@@ -43,6 +43,7 @@ fun HomeScreen(
     onCreateExperiment: () -> Unit,
     onCheckIn: (experimentId: String, initialCompleted: Boolean) -> Unit,
     onNavigateToCompletion: (experimentId: String) -> Unit,
+    onNavigateToReflection: (experimentId: String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
