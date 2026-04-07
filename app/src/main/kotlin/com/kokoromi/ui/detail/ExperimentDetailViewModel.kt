@@ -36,6 +36,7 @@ sealed interface ExperimentDetailUiState {
         val completion: Completion?,
         val stats: CompletionStats,
         val showPauseDialog: Boolean = false,
+        val showArchiveDialog: Boolean = false,
     ) : ExperimentDetailUiState
     data class Error(val message: String) : ExperimentDetailUiState
 }
@@ -54,6 +55,7 @@ class ExperimentDetailViewModel @Inject constructor(
 
     private val _completion = MutableStateFlow<Completion?>(null)
     private val _showPauseDialog = MutableStateFlow(false)
+    private val _showArchiveDialog = MutableStateFlow(false)
 
     init {
         viewModelScope.launch {
@@ -67,7 +69,8 @@ class ExperimentDetailViewModel @Inject constructor(
         reflectionRepository.getReflectionsForExperiment(experimentId),
         _completion,
         _showPauseDialog,
-    ) { experiment, logs, reflections, completion, showPauseDialog ->
+        _showArchiveDialog,
+    ) { experiment, logs, reflections, completion, showPauseDialog, showArchiveDialog ->
         if (experiment == null) {
             ExperimentDetailUiState.Error("Experiment not found")
         } else {
@@ -78,6 +81,7 @@ class ExperimentDetailViewModel @Inject constructor(
                 completion = completion,
                 stats = computeStats(experiment, logs),
                 showPauseDialog = showPauseDialog,
+                showArchiveDialog = showArchiveDialog,
             )
         }
     }
@@ -96,6 +100,17 @@ class ExperimentDetailViewModel @Inject constructor(
         _showPauseDialog.update { false }
         viewModelScope.launch {
             updateExperimentStatus.pause(experimentId)
+        }
+    }
+
+    fun onArchiveRequested() = _showArchiveDialog.update { true }
+
+    fun onArchiveDismissed() = _showArchiveDialog.update { false }
+
+    fun onArchiveConfirmed() {
+        _showArchiveDialog.update { false }
+        viewModelScope.launch {
+            updateExperimentStatus.archive(experimentId)
         }
     }
 

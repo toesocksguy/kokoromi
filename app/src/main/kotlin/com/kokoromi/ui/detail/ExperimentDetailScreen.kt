@@ -101,8 +101,23 @@ fun ExperimentDetailScreen(
                 DetailContent(
                     state = state,
                     onPauseRequested = viewModel::onPauseRequested,
+                    onArchiveRequested = viewModel::onArchiveRequested,
                     modifier = Modifier.padding(innerPadding),
                 )
+
+                if (state.showArchiveDialog) {
+                    AlertDialog(
+                        onDismissRequest = viewModel::onArchiveDismissed,
+                        title = { Text("Archive experiment?") },
+                        text = { Text("This experiment will be moved to your archive. Your data will be preserved.") },
+                        confirmButton = {
+                            TextButton(onClick = viewModel::onArchiveConfirmed) { Text("Archive") }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = viewModel::onArchiveDismissed) { Text("Cancel") }
+                        },
+                    )
+                }
 
                 if (state.showPauseDialog) {
                     AlertDialog(
@@ -126,6 +141,7 @@ fun ExperimentDetailScreen(
 private fun DetailContent(
     state: ExperimentDetailUiState.Success,
     onPauseRequested: () -> Unit,
+    onArchiveRequested: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val experiment = state.experiment
@@ -245,9 +261,9 @@ private fun DetailContent(
             }
         }
 
-        // Pause button (ACTIVE experiments only)
-        if (experiment.status == ExperimentStatus.ACTIVE) {
-            item {
+        // Action buttons by status
+        when (experiment.status) {
+            ExperimentStatus.ACTIVE -> item {
                 OutlinedButton(
                     onClick = onPauseRequested,
                     modifier = Modifier
@@ -256,6 +272,16 @@ private fun DetailContent(
                         .semantics { contentDescription = "Pause experiment" },
                 ) { Text("Pause Experiment") }
             }
+            ExperimentStatus.PAUSED -> item {
+                OutlinedButton(
+                    onClick = onArchiveRequested,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 16.dp)
+                        .semantics { contentDescription = "Archive experiment" },
+                ) { Text("Archive Experiment") }
+            }
+            else -> Unit
         }
     }
 }
