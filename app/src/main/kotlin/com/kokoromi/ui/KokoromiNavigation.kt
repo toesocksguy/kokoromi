@@ -1,9 +1,6 @@
 package com.kokoromi.ui
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,6 +10,7 @@ import com.kokoromi.ui.checkin.CheckInScreen
 import com.kokoromi.ui.completion.CompletionScreen
 import com.kokoromi.ui.create.CreateExperimentScreen
 import com.kokoromi.ui.home.HomeScreen
+import com.kokoromi.ui.reflection.ReflectionScreen
 import java.time.LocalDate
 
 sealed class Screen(val route: String) {
@@ -93,8 +91,7 @@ fun KokoromiNavigation() {
                 navArgument("experimentId") { type = NavType.StringType },
             ),
         ) {
-            // TODO: replace with ReflectionScreen once built
-            Box(modifier = Modifier.fillMaxSize())
+            ReflectionScreen(onBack = { navController.popBackStack() })
         }
     }
 }
