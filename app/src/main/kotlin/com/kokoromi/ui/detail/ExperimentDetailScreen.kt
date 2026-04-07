@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -111,12 +110,7 @@ fun ExperimentDetailScreen(
                         title = { Text("Pause experiment?") },
                         text = { Text("Your data will be saved. You can resume when you're ready, as long as a slot is available.") },
                         confirmButton = {
-                            TextButton(
-                                onClick = viewModel::onPauseConfirmed,
-                                colors = ButtonDefaults.textButtonColors(
-                                    contentColor = MaterialTheme.colorScheme.error,
-                                ),
-                            ) { Text("Pause") }
+                            TextButton(onClick = viewModel::onPauseConfirmed) { Text("Pause") }
                         },
                         dismissButton = {
                             TextButton(onClick = viewModel::onPauseDismissed) { Text("Cancel") }
@@ -256,12 +250,6 @@ private fun DetailContent(
             item {
                 OutlinedButton(
                     onClick = onPauseRequested,
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.error,
-                    ),
-                    border = androidx.compose.foundation.BorderStroke(
-                        1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.5f)
-                    ),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 16.dp)
