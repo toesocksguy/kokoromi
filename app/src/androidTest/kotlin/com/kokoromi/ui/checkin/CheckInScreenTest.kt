@@ -60,7 +60,7 @@ class CheckInScreenTest {
     @Test
     fun showsBackButton() {
         composeRule.setContent {
-            CheckInScreen(onBack = {}, viewModel = makeViewModel())
+            CheckInScreen(onBack = {}, onReflect = {}, viewModel = makeViewModel())
         }
 
         composeRule.onNodeWithContentDescription("Back").assertIsDisplayed()
@@ -70,7 +70,7 @@ class CheckInScreenTest {
     fun clickingBackInvokesCallback() {
         var called = false
         composeRule.setContent {
-            CheckInScreen(onBack = { called = true }, viewModel = makeViewModel())
+            CheckInScreen(onBack = { called = true }, onReflect = {}, viewModel = makeViewModel())
         }
 
         composeRule.onNodeWithContentDescription("Back").performClick()
@@ -81,7 +81,7 @@ class CheckInScreenTest {
     @Test
     fun showsExperimentActionInTitle() {
         composeRule.setContent {
-            CheckInScreen(onBack = {}, viewModel = makeViewModel())
+            CheckInScreen(onBack = {}, onReflect = {}, viewModel = makeViewModel())
         }
 
         composeRule.waitUntil(timeoutMillis = 3_000) {
@@ -93,7 +93,7 @@ class CheckInScreenTest {
     @Test
     fun showsDidYouDoItPromptWhenNoExistingLog() {
         composeRule.setContent {
-            CheckInScreen(onBack = {}, viewModel = makeViewModel())
+            CheckInScreen(onBack = {}, onReflect = {}, viewModel = makeViewModel())
         }
 
         composeRule.waitUntil(timeoutMillis = 3_000) {
@@ -117,7 +117,7 @@ class CheckInScreenTest {
         fakeDailyLogRepo.seedLog(existingLog)
 
         composeRule.setContent {
-            CheckInScreen(onBack = {}, viewModel = makeViewModel())
+            CheckInScreen(onBack = {}, onReflect = {}, viewModel = makeViewModel())
         }
 
         composeRule.waitUntil(timeoutMillis = 3_000) {
@@ -129,7 +129,7 @@ class CheckInScreenTest {
     @Test
     fun showsYesAndSkipButtons() {
         composeRule.setContent {
-            CheckInScreen(onBack = {}, viewModel = makeViewModel())
+            CheckInScreen(onBack = {}, onReflect = {}, viewModel = makeViewModel())
         }
 
         composeRule.waitUntil(timeoutMillis = 3_000) {
@@ -142,7 +142,7 @@ class CheckInScreenTest {
     @Test
     fun showsMoodRatingLabel() {
         composeRule.setContent {
-            CheckInScreen(onBack = {}, viewModel = makeViewModel())
+            CheckInScreen(onBack = {}, onReflect = {}, viewModel = makeViewModel())
         }
 
         composeRule.waitUntil(timeoutMillis = 3_000) {
@@ -154,7 +154,7 @@ class CheckInScreenTest {
     @Test
     fun showsNotesField() {
         composeRule.setContent {
-            CheckInScreen(onBack = {}, viewModel = makeViewModel())
+            CheckInScreen(onBack = {}, onReflect = {}, viewModel = makeViewModel())
         }
 
         composeRule.waitUntil(timeoutMillis = 3_000) {
@@ -166,7 +166,7 @@ class CheckInScreenTest {
     @Test
     fun showsLogActivityButton() {
         composeRule.setContent {
-            CheckInScreen(onBack = {}, viewModel = makeViewModel())
+            CheckInScreen(onBack = {}, onReflect = {}, viewModel = makeViewModel())
         }
 
         composeRule.waitUntil(timeoutMillis = 3_000) {
@@ -178,7 +178,7 @@ class CheckInScreenTest {
     @Test
     fun moodStarsHaveEmptyContentDescriptionsByDefault() {
         composeRule.setContent {
-            CheckInScreen(onBack = {}, viewModel = makeViewModel())
+            CheckInScreen(onBack = {}, onReflect = {}, viewModel = makeViewModel())
         }
 
         composeRule.waitUntil(timeoutMillis = 3_000) {
@@ -192,7 +192,7 @@ class CheckInScreenTest {
     @Test
     fun tappingMoodStarFillsUpToThatStar() {
         composeRule.setContent {
-            CheckInScreen(onBack = {}, viewModel = makeViewModel())
+            CheckInScreen(onBack = {}, onReflect = {}, viewModel = makeViewModel())
         }
 
         composeRule.waitUntil(timeoutMillis = 3_000) {
@@ -209,7 +209,7 @@ class CheckInScreenTest {
     @Test
     fun tappingSelectedStarClearsMoodRating() {
         composeRule.setContent {
-            CheckInScreen(onBack = {}, viewModel = makeViewModel())
+            CheckInScreen(onBack = {}, onReflect = {}, viewModel = makeViewModel())
         }
 
         composeRule.waitUntil(timeoutMillis = 3_000) {
@@ -225,7 +225,7 @@ class CheckInScreenTest {
     fun successfulSubmitInvokesOnBack() {
         var backCalled = false
         composeRule.setContent {
-            CheckInScreen(onBack = { backCalled = true }, viewModel = makeViewModel())
+            CheckInScreen(onBack = { backCalled = true }, onReflect = {}, viewModel = makeViewModel())
         }
 
         composeRule.waitUntil(timeoutMillis = 3_000) {
