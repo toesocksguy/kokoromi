@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kokoromi.data.model.ThemePreference
+import com.kokoromi.ui.components.KokoromiBottomNav
 import java.time.DayOfWeek
 import java.time.format.TextStyle
 import java.util.Locale
@@ -42,6 +43,7 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
+    onNavigateToTab: (Int) -> Unit,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val prefs by viewModel.preferences.collectAsStateWithLifecycle()
@@ -109,6 +111,7 @@ fun SettingsScreen(
     Scaffold(
         topBar = { TopAppBar(title = { Text("Settings") }) },
         snackbarHost = { SnackbarHost(snackbarHostState) },
+        bottomBar = { KokoromiBottomNav(selectedIndex = 3, onNavigate = onNavigateToTab) },
     ) { innerPadding ->
         Column(
             modifier = Modifier

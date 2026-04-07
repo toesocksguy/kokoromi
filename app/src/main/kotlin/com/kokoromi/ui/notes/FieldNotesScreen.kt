@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kokoromi.domain.model.FieldNote
+import com.kokoromi.ui.components.KokoromiBottomNav
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -40,6 +41,7 @@ import java.time.format.DateTimeFormatter
 fun FieldNotesScreen(
     onCreateNote: () -> Unit,
     onOpenNote: (noteId: String) -> Unit,
+    onNavigateToTab: (Int) -> Unit,
     viewModel: FieldNotesViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -67,6 +69,7 @@ fun FieldNotesScreen(
                 Icon(imageVector = Icons.Filled.Add, contentDescription = null)
             }
         },
+        bottomBar = { KokoromiBottomNav(selectedIndex = 1, onNavigate = onNavigateToTab) },
     ) { innerPadding ->
         when (val state = uiState) {
             is FieldNotesUiState.Loading -> {

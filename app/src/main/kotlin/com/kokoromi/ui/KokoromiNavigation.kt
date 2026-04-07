@@ -45,9 +45,25 @@ sealed class Screen(val route: String) {
     object Settings : Screen("settings")
 }
 
+private val tabRoutes = listOf(
+    Screen.Home.route,
+    Screen.FieldNotes.route,
+    Screen.Archive.route,
+    Screen.Settings.route,
+)
+
 @Composable
 fun KokoromiNavigation() {
     val navController = rememberNavController()
+
+    fun navigateToTab(index: Int) {
+        navController.navigate(tabRoutes[index]) {
+            popUpTo(Screen.Home.route) { saveState = true }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
+
     NavHost(
         navController = navController,
         startDestination = Screen.Home.route
@@ -67,6 +83,7 @@ fun KokoromiNavigation() {
                 onNavigateToDetail = { experimentId ->
                     navController.navigate(Screen.ExperimentDetail.route(experimentId))
                 },
+                onNavigateToTab = ::navigateToTab,
             )
         }
         composable(Screen.CreateExperiment.route) {
@@ -126,15 +143,17 @@ fun KokoromiNavigation() {
                 onNavigateToDetail = { experimentId ->
                     navController.navigate(Screen.ExperimentDetail.route(experimentId))
                 },
+                onNavigateToTab = ::navigateToTab,
             )
         }
         composable(Screen.Settings.route) {
-            SettingsScreen()
+            SettingsScreen(onNavigateToTab = ::navigateToTab)
         }
         composable(Screen.FieldNotes.route) {
             FieldNotesScreen(
                 onCreateNote = { navController.navigate(Screen.AddEditNote.route()) },
                 onOpenNote = { noteId -> navController.navigate(Screen.AddEditNote.route(noteId)) },
+                onNavigateToTab = ::navigateToTab,
             )
         }
         composable(

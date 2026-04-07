@@ -39,6 +39,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kokoromi.domain.model.Experiment
 import com.kokoromi.domain.usecase.ReflectionPromptState
+import com.kokoromi.ui.components.KokoromiBottomNav
 import com.kokoromi.ui.home.components.ExperimentCard
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -51,6 +52,7 @@ fun HomeScreen(
     onNavigateToCompletion: (experimentId: String) -> Unit,
     onNavigateToReflection: (experimentId: String) -> Unit,
     onNavigateToDetail: (experimentId: String) -> Unit,
+    onNavigateToTab: (Int) -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -81,6 +83,7 @@ fun HomeScreen(
                 },
             )
         },
+        bottomBar = { KokoromiBottomNav(selectedIndex = 0, onNavigate = onNavigateToTab) },
     ) { innerPadding ->
         when (val state = uiState) {
             is HomeUiState.Loading -> {

@@ -33,6 +33,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kokoromi.domain.model.Experiment
 import com.kokoromi.domain.model.ExperimentStatus
+import com.kokoromi.ui.components.KokoromiBottomNav
 import java.time.format.DateTimeFormatter
 
 private val dateFmt = DateTimeFormatter.ofPattern("MMM d, yyyy")
@@ -41,6 +42,7 @@ private val dateFmt = DateTimeFormatter.ofPattern("MMM d, yyyy")
 @Composable
 fun ArchiveScreen(
     onNavigateToDetail: (experimentId: String) -> Unit,
+    onNavigateToTab: (Int) -> Unit,
     viewModel: ArchiveViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -50,6 +52,7 @@ fun ArchiveScreen(
         topBar = {
             TopAppBar(title = { Text("Archive") })
         },
+        bottomBar = { KokoromiBottomNav(selectedIndex = 2, onNavigate = onNavigateToTab) },
     ) { innerPadding ->
         when (val state = uiState) {
             is ArchiveUiState.Loading -> {
