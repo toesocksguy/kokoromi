@@ -1,6 +1,9 @@
 package com.kokoromi.ui
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -24,7 +27,9 @@ sealed class Screen(val route: String) {
     object Completion : Screen("completion/{experimentId}") {
         fun route(experimentId: String) = "completion/$experimentId"
     }
-    // object Reflection : Screen("reflection")
+    object Reflection : Screen("reflection/{experimentId}") {
+        fun route(experimentId: String) = "reflection/$experimentId"
+    }
     // object Archive : Screen("archive")
     // object Settings : Screen("settings")
 }
@@ -44,6 +49,9 @@ fun KokoromiNavigation() {
                 },
                 onNavigateToCompletion = { experimentId ->
                     navController.navigate(Screen.Completion.route(experimentId))
+                },
+                onNavigateToReflection = { experimentId ->
+                    navController.navigate(Screen.Reflection.route(experimentId))
                 },
             )
         }
@@ -78,6 +86,15 @@ fun KokoromiNavigation() {
                     navController.navigate(Screen.CreateExperiment.route)
                 },
             )
+        }
+        composable(
+            route = Screen.Reflection.route,
+            arguments = listOf(
+                navArgument("experimentId") { type = NavType.StringType },
+            ),
+        ) {
+            // TODO: replace with ReflectionScreen once built
+            Box(modifier = Modifier.fillMaxSize())
         }
     }
 }
