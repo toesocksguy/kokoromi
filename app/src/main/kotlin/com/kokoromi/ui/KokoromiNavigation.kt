@@ -66,8 +66,12 @@ fun KokoromiNavigation() {
                 navArgument("initialCompleted") { type = NavType.BoolType },
                 navArgument("date") { type = NavType.StringType; nullable = true; defaultValue = null },
             ),
-        ) {
-            CheckInScreen(onBack = { navController.popBackStack() })
+        ) { backStackEntry ->
+            val experimentId = backStackEntry.arguments?.getString("experimentId") ?: ""
+            CheckInScreen(
+                onBack = { navController.popBackStack() },
+                onReflect = { navController.navigate(Screen.Reflection.route(experimentId)) },
+            )
         }
         composable(
             route = Screen.Completion.route,

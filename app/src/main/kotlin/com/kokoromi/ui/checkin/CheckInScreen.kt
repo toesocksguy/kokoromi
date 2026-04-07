@@ -16,6 +16,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -48,6 +49,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun CheckInScreen(
     onBack: () -> Unit,
+    onReflect: () -> Unit,
     viewModel: CheckInViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -147,6 +149,13 @@ fun CheckInScreen(
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text("Log Activity")
+                    }
+
+                    TextButton(
+                        onClick = onReflect,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text("+ Add a quick reflection for today")
                     }
                 }
             }
