@@ -1,9 +1,9 @@
 package com.kokoromi.ui.components
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Archive
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Note
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -16,8 +16,8 @@ data class BottomNavItem(val label: String, val icon: ImageVector)
 
 val bottomNavItems = listOf(
     BottomNavItem("Home", Icons.Filled.Home),
-    BottomNavItem("Notes", Icons.Filled.Note),
-    BottomNavItem("Archive", Icons.Filled.Archive),
+    BottomNavItem("Notes", Icons.Filled.Edit),
+    BottomNavItem("Archive", Icons.Filled.List),
     BottomNavItem("Settings", Icons.Filled.Settings),
 )
 
