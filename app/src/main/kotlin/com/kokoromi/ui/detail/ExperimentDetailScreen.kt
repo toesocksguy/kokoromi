@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -117,6 +118,7 @@ fun ExperimentDetailScreen(
                 if (state.showArchiveDialog) {
                     AlertDialog(
                         onDismissRequest = viewModel::onArchiveDismissed,
+                        properties = DialogProperties(dismissOnClickOutside = false),
                         title = { Text("Archive experiment?") },
                         text = { Text("This experiment will be moved to your archive. Your data will be preserved.") },
                         confirmButton = {
@@ -131,6 +133,7 @@ fun ExperimentDetailScreen(
                 if (state.showPauseDialog) {
                     AlertDialog(
                         onDismissRequest = viewModel::onPauseDismissed,
+                        properties = DialogProperties(dismissOnClickOutside = false),
                         title = { Text("Pause experiment?") },
                         text = { Text("Your data will be saved. You can resume from the Archive screen when you're ready, as long as a slot is available.") },
                         confirmButton = {
@@ -146,6 +149,7 @@ fun ExperimentDetailScreen(
                     val daysLeft = java.time.LocalDate.now().until(state.experiment.endDate, java.time.temporal.ChronoUnit.DAYS)
                     AlertDialog(
                         onDismissRequest = viewModel::onEndEarlyDismissed,
+                        properties = DialogProperties(dismissOnClickOutside = false),
                         title = { Text("End experiment early?") },
                         text = { Text("You still have $daysLeft day${if (daysLeft == 1L) "" else "s"} left. You'll be taken to the completion screen to record your decision.") },
                         confirmButton = {
