@@ -2,7 +2,7 @@
 
 An open-source Android "habit" tracker built on Anne-Laure Le Cunff's [Tiny Experiments](https://nesslabs.com/book) framework for living life through systematic curiosity.
 
-**Status**: v0.1.0 — Milestone 1 complete, actively building  
+**Status**: v0.1.0 — Milestones 1–6 complete, Milestone 7 (Archive, Field Notes, Settings & Export) in progress  
 **License**: GPL-3.0  
 **Platform**: Android 8.0+ (API 26+)
 
@@ -65,6 +65,19 @@ All design docs live in `docs/`:
 | [UI_DESIGN.md](docs/UI_DESIGN.md) | Screens, wireframes, interaction patterns |
 | [OPEN_SOURCE_GUIDE.md](docs/OPEN_SOURCE_GUIDE.md) | Contributing guidelines |
 | [MANIFEST.md](docs/MANIFEST.md) | Navigation guide for the full doc suite |
+
+---
+
+## Known Issues & Remaining Work
+
+**Bugs**
+- Experiments paused via the completion screen ("set this aside") are stored with `ARCHIVED` status instead of `PAUSED`, so they appear in the wrong Archive tab and cannot be resumed
+- Resume button for paused experiments is not yet implemented in the Archive screen
+
+**Remaining M7 tasks**
+- Unit tests for `GetReflectionPromptStateUseCase`, `GetActiveExperimentsWithLogsUseCase`, `UpdateExperimentStatusUseCase`
+- Accessibility pass: semantics on Archive list items and ExperimentDetail timeline; Android Accessibility Scanner run
+- Release CI: `.github/workflows/release.yml` — build and publish APK on git tag
 
 ---
 

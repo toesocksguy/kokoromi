@@ -32,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -185,8 +186,9 @@ fun SettingsScreen(
             SettingsRow(label = "License", trailing = { Text("GPL-3.0", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) })
             HorizontalDivider()
 
+            val uriHandler = LocalUriHandler.current
             OutlinedButton(
-                onClick = { /* TODO: open source URL */ },
+                onClick = { uriHandler.openUri("https://github.com/toesocksguy/kokoromi") },
                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
             ) {
                 Text("View source code")
