@@ -53,18 +53,7 @@ Always use `./gradlew` rather than a system `gradle` command — the wrapper ens
 
 ## Documentation
 
-All design docs live in `docs/`:
-
-| Document | Purpose |
-|----------|---------|
-| [PHILOSOPHY.md](docs/PHILOSOPHY.md) | Core principles and design rationale |
-| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Layered MVVM, patterns, testing strategy |
-| [DATA_MODEL.md](docs/DATA_MODEL.md) | Database schema, entities, queries |
-| [EXPERIMENT_LIFECYCLE.md](docs/EXPERIMENT_LIFECYCLE.md) | State machine, transitions, edge cases |
-| [REFLECTION_SYSTEM.md](docs/REFLECTION_SYSTEM.md) | Plus-Minus-Next, weekly prompts |
-| [UI_DESIGN.md](docs/UI_DESIGN.md) | Screens, wireframes, interaction patterns |
-| [OPEN_SOURCE_GUIDE.md](docs/OPEN_SOURCE_GUIDE.md) | Contributing guidelines |
-| [MANIFEST.md](docs/MANIFEST.md) | Navigation guide for the full doc suite |
+All design docs live in `docs/`. Start with [MANIFEST.md](docs/MANIFEST.md) — it has the full index, role-based reading guides, and a common questions FAQ.
 
 ---
 
@@ -73,9 +62,6 @@ All design docs live in `docs/`:
 **Bugs**
 - Experiments paused via the completion screen ("set this aside") are stored with `ARCHIVED` status instead of `PAUSED`, so they appear in the wrong Archive tab and cannot be resumed. **Note:** `CompleteExperimentUseCaseTest` currently asserts `ARCHIVED` as the expected status for pause — fix those test assertions alongside the status fix, or the tests will fail after the bug is corrected.
 - Resume button for paused experiments is not yet implemented in the Archive screen
-
-**Backlog**
-- Compress docs in `docs/` — most are verbose; trim to essential signal only
 
 **Remaining M7 tasks**
 - Unit tests for `GetReflectionPromptStateUseCase`, `GetActiveExperimentsWithLogsUseCase`, `UpdateExperimentStatusUseCase`
