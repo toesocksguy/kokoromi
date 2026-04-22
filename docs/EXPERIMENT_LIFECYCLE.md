@@ -128,7 +128,7 @@ Computed at Completion Screen from all `DailyLog` rows for the experiment:
 | Max active experiments | 2 |
 | Min duration | 1 day |
 | Max duration | 180 days |
-| Default duration | 14 days |
+| Default duration | 7 days |
 | Back-fill past dates | Yes, within experiment window |
 | Log future dates | No |
 | Un-archive | No |

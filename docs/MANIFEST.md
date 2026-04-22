@@ -43,7 +43,7 @@
 | How do I add a new screen? | [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) (feature checklist) + [UI_DESIGN.md](UI_DESIGN.md) |
 | Can I add notifications / gamification / social features? | No — [PHILOSOPHY.md](PHILOSOPHY.md) + [DESIGN_CONSTRAINTS.md](DESIGN_CONSTRAINTS.md) |
 | Can I add an analytics SDK? | No — [PHILOSOPHY.md](PHILOSOPHY.md) + [LEGAL_CONSIDERATIONS.md](LEGAL_CONSIDERATIONS.md) |
-| Where do field notes live in the code? | `ui/fieldnotes/` — [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) + [DATA_MODEL.md](DATA_MODEL.md) |
+| Where do field notes live in the code? | `ui/notes/` — [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) + [DATA_MODEL.md](DATA_MODEL.md) |
 | What's the JSON export format? | [DATA_MODEL.md](DATA_MODEL.md) — Export Format section |
 | Will this run on a cheap phone? | [BUDGET_PHONE_OPTIMIZATION.md](BUDGET_PHONE_OPTIMIZATION.md) |
 | Is the database encrypted? | No — see [PERFORMANCE_RESPONSIVENESS_SECURITY.md](PERFORMANCE_RESPONSIVENESS_SECURITY.md) |

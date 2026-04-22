@@ -15,7 +15,7 @@ kokoromi/
 │   │   ├── checkin/                 # CheckInScreen, CheckInViewModel
 │   │   ├── reflection/              # ReflectionScreen, ReflectionViewModel
 │   │   ├── completion/              # ExperimentCompletionScreen, CompletionViewModel
-│   │   ├── fieldnotes/              # FieldNotesScreen, AddEditNoteScreen + ViewModels
+│   │   ├── notes/                   # FieldNotesScreen, AddEditNoteScreen + ViewModels
 │   │   ├── archive/                 # ArchiveScreen, ArchiveViewModel
 │   │   └── theme/                   # Color.kt, Type.kt, Theme.kt, Shapes.kt
 │   │
@@ -24,15 +24,18 @@ kokoromi/
 │   │   │   ├── KokoromiDatabase.kt
 │   │   │   ├── dao/                 # ExperimentDao, DailyLogDao, ReflectionDao, CompletionDao, FieldNoteDao
 │   │   │   └── entity/              # Room entities (one per table)
+│   │   ├── export/                  # JsonExporter
+│   │   ├── imports/                 # JsonImporter, ImportPayload
 │   │   ├── repository/              # Interfaces + Default* implementations
-│   │   └── model/                   # Clean domain data classes (no Room annotations)
+│   │   └── model/                   # UserPreferences, ThemePreference (DataStore models)
 │   │
 │   ├── domain/
 │   │   ├── usecase/                 # One use case per business operation
-│   │   └── model/                   # Enums: ExperimentStatus, Frequency, DecisionType
+│   │   └── model/                   # Domain models + enums (Experiment, DailyLog, ExperimentStatus, …)
 │   │
 │   ├── di/                          # Hilt modules: DatabaseModule, RepositoryModule, PreferencesModule
-│   └── util/                        # Constants.kt, DateUtils.kt, JsonExporter.kt
+│   ├── notification/                # CheckInReminderWorker, ReminderScheduler
+│   └── util/                        # Constants.kt
 │
 ├── app/src/test/                    # JVM unit tests (use cases, validators)
 ├── app/src/androidTest/             # Instrumented tests (Compose UI, Room DB)
@@ -72,8 +75,9 @@ Never reverse. Data never calls UI. Domain never imports Android classes.
 | `KokoromiNavigation.kt` | Full nav graph; all routes defined here |
 | `KokoromiDatabase.kt` | Room DB class; migration management |
 | `Constants.kt` | `MAX_ACTIVE_EXPERIMENTS=2`, char limits, duration defaults |
-| `JsonExporter.kt` | Streams all user data to JSON file |
-| `PreferencesRepository.kt` | DataStore: reflection day, theme |
+| `data/export/JsonExporter.kt` | Serialises all user data to JSON |
+| `data/imports/JsonImporter.kt` | Parses JSON export back into domain models |
+| `PreferencesRepository.kt` | DataStore: reflection day, theme, reminder settings |
 
 **Key constants**
 
@@ -84,7 +88,7 @@ Never reverse. Data never calls UI. Domain never imports Android classes.
 | ACTION_MAX_CHARS | 500 |
 | REFLECTION_MAX_CHARS | 2000 |
 | FIELD_NOTE_MAX_CHARS | 5000 |
-| DEFAULT_DURATION_DAYS | 14 |
+| DEFAULT_DURATION_DAYS | 7 |
 
 ---
 

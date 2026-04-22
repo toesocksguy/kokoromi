@@ -195,10 +195,12 @@ FieldNote — independent, no foreign keys
 
 ## Export Format (JSON)
 
+Logs, reflections, and completion are nested inside each experiment object. Field notes are a top-level array.
+
 ```json
 {
-  "version": "1.0",
-  "exportDate": "2026-03-30T15:45:30Z",
+  "version": 1,
+  "exportedAt": "2026-03-30T15:45:30Z",
   "experiments": [
     {
       "id": "uuid",
@@ -209,42 +211,35 @@ FieldNote — independent, no foreign keys
       "endDate": "2026-03-30",
       "frequency": "DAILY",
       "status": "COMPLETED",
-      "createdAt": "2026-03-16T10:00:00Z"
-    }
-  ],
-  "dailyLogs": [
-    {
-      "id": "uuid",
-      "experimentId": "uuid",
-      "date": "2026-03-16",
-      "completed": true,
-      "moodBefore": 3,
-      "moodAfter": 4,
-      "notes": "Felt energized",
-      "loggedAt": "2026-03-16T08:30:00Z"
-    }
-  ],
-  "reflections": [
-    {
-      "id": "uuid",
-      "experimentId": "uuid",
-      "reflectionDate": "2026-03-23",
-      "plus": "Felt good on walking days",
-      "minus": "Skipped one day due to rain",
-      "next": "Bring umbrella on rainy days",
-      "createdAt": "2026-03-23T20:00:00Z"
-    }
-  ],
-  "completions": [
-    {
-      "id": "uuid",
-      "experimentId": "uuid",
-      "completionDate": "2026-03-30",
-      "completionRate": 0.9286,
-      "decision": "persist",
-      "learnings": "Walking definitely helps me focus.",
-      "nextExperimentId": null,
-      "createdAt": "2026-03-30T15:45:00Z"
+      "createdAt": "2026-03-16T10:00:00Z",
+      "updatedAt": "2026-03-30T15:45:00Z",
+      "logs": [
+        {
+          "id": "uuid",
+          "date": "2026-03-16",
+          "completed": true,
+          "moodBefore": 3,
+          "moodAfter": 4,
+          "notes": "Felt energized",
+          "loggedAt": "2026-03-16T08:30:00Z"
+        }
+      ],
+      "reflections": [
+        {
+          "id": "uuid",
+          "reflectionDate": "2026-03-23",
+          "plus": "Felt good on walking days",
+          "minus": "Skipped one day due to rain",
+          "next": "Bring umbrella on rainy days",
+          "createdAt": "2026-03-23T20:00:00Z"
+        }
+      ],
+      "completion": {
+        "completionDate": "2026-03-30",
+        "completionRate": 0.9286,
+        "decision": "PERSIST",
+        "learnings": "Walking definitely helps me focus."
+      }
     }
   ],
   "fieldNotes": [
@@ -257,3 +252,9 @@ FieldNote — independent, no foreign keys
   ]
 }
 ```
+
+**Notes:**
+- `completion` is omitted when absent (experiment not yet completed)
+- `why`, `moodBefore`, `moodAfter`, `notes`, `plus`, `minus`, `next`, `learnings` are `null` when not set
+- `decision` values: `PERSIST`, `PIVOT`, `PAUSE`
+- `nextExperimentId` is not included in the export (PIVOT links are not preserved on import)

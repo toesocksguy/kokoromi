@@ -5,6 +5,53 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [Milestone 7] - 2026-04-22 — Archive, Field Notes, Settings & Export
+
+Archive screen for completed/paused experiments, freeform field notes, full settings screen, JSON export and import, and opt-in daily check-in reminders.
+
+### Added
+- `ArchiveScreen` — lists COMPLETED, PAUSED, and ARCHIVED experiments with hypothesis, status, date range, and completion rate; Resume button for PAUSED experiments (guarded by active slot count)
+- `ArchiveViewModel` — combines `GetNonActiveExperimentsUseCase` with per-experiment completion stats
+- `GetNonActiveExperimentsUseCase` — flow of all non-ACTIVE experiments for the archive
+- `FieldNotesScreen` — scrollable list of freeform field notes sorted by `createdAt`; tap to edit, swipe to delete
+- `AddEditNoteScreen` — create and edit field notes with `createdAt` (user-editable observation time) and character limit (`FIELD_NOTE_BODY_MAX_CHARS = 5000`)
+- `FieldNotesViewModel`, `AddEditNoteViewModel`
+- `SaveFieldNoteUseCase`, `DeleteFieldNoteUseCase`, `GetFieldNotesUseCase`, `GetFieldNoteUseCase`
+- `SettingsScreen` — theme selector (System/Light/Dark), reflection day picker, opt-in check-in reminder (switch + time picker), export, import, and delete-all-data
+- `SettingsViewModel` — manages preferences, export, import, and clear-all flows via events
+- `ExportDataUseCase` — collects all user data across five repositories and serialises to JSON
+- `ImportDataUseCase` — parses the v1 export format and persists records; skips ID collisions for experiments and completions; upserts logs, reflections, and field notes
+- `JsonExporter` (`data/export/`) — pure serialiser mirroring the v1 JSON schema
+- `JsonImporter` (`data/imports/`) — resilient parser; malformed individual records are skipped rather than aborting the import
+- `ClearAllDataUseCase` — wipes all five tables via `DatabaseCleaner`
+- `UpdateExperimentStatusUseCase` — `pause()` / `archive()` / `endEarly()` / `resume()` with status guards; `resume()` enforces `MAX_ACTIVE_EXPERIMENTS`
+- `CheckInReminderWorker` — `@HiltWorker`; suppresses notification if all active experiments are already logged today
+- `ReminderScheduler` — schedules/cancels a `PeriodicWorkRequest` for the user-chosen time
+- Notification channel and `POST_NOTIFICATIONS` permission (runtime request on Android 13+)
+- `KokoromiBottomNav` — four-tab bottom navigation (Home, Notes, Archive, Settings)
+- `GetReflectionPromptStateUseCaseTest` — 9 unit tests: non-reflection day early return, prompt shown/suppressed, week boundary calculation (Monday–Sunday), result field population
+- `GetActiveExperimentsWithLogsUseCaseTest` — 9 unit tests: empty list, non-ACTIVE filtering, `todayLog` presence/absence, multi-experiment combination
+- `UpdateExperimentStatusUseCaseTest` — 18 unit tests covering all four operations and their guards (not found, wrong status, slot cap)
+
+### Changed
+- `HomeScreen` — excludes PAUSED experiments from the active card list
+- `KokoromiNavigation` — added routes for Archive, Field Notes, Settings; bottom nav wired
+- `PreferencesRepository` / `DefaultPreferencesRepository` — added `reminderEnabled`, `reminderHour`, `reminderMinute` fields and setters
+- `UserPreferences` — added reminder fields with defaults (`enabled = false`, `hour = 20`, `minute = 0`)
+- `KokoromiApp` — creates notification channel on startup; provides `HiltWorkerFactory` via `Configuration.Provider`
+- `KokoromiDatabase` — added `FieldNoteDao` binding
+
+### Fixed
+- PAUSED experiments incorrectly set to ARCHIVED status on pause — now correctly set to PAUSED
+- PAUSED experiments incorrectly appearing on the Home Screen — now excluded from active list
+
+### Accessibility
+- `LogItem` and `ReflectionItem` in `ExperimentDetailScreen` — added `contentDescription` to `semantics(mergeDescendants = true)` blocks; timeline entries now announced to screen readers
+- `ArchiveItem` — `contentDescription` includes hypothesis, status, date range, and completion rate
+- "Edit Log" button in `ExperimentCard` — added `contentDescription`
+
+---
+
 ## [Milestone 6] - 2026-04-07 — Reflections
 
 Weekly Plus-Minus-Next reflection prompts, surfaced on the home screen on the configured day and accessible manually from the check-in screen at any time.

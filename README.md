@@ -60,16 +60,11 @@ All design docs live in `docs/`. Start with [MANIFEST.md](docs/MANIFEST.md) — 
 ## Known Issues & Remaining Work
 
 **Backlog**
-- Import data from JSON export (complement to existing export feature)
+- Preserve `nextExperimentId` on PIVOT completions through export/import — field is currently omitted from the export format; fix is additive and backward-compatible (no version bump needed)
 
 **Remaining M7 tasks**
 - Unit tests for `GetReflectionPromptStateUseCase`, `GetActiveExperimentsWithLogsUseCase`, `UpdateExperimentStatusUseCase`
-- Accessibility pass:
-  - `ExperimentDetailScreen.kt` lines 336–339, 378–379: `LogItem` and `ReflectionItem` have empty `semantics(mergeDescendants = true) {}` blocks — hook is there but no `contentDescription`; timeline entries announce nothing to screen readers
-  - `ArchiveScreen.kt` line 143: archive items describe hypothesis + status only; date range and completion rate (visible on screen) missing from `contentDescription`
-  - `ExperimentCard.kt` lines 118–123: "Edit Log" button has no `contentDescription`; appears when today is already logged
-  - Android Accessibility Scanner run
-- ✅ Daily check-in reminder notification (opt-in) — complete
+- Android Accessibility Scanner run
 - Release CI: `.github/workflows/release.yml` — build and publish APK on git tag
 
 ---
@@ -77,7 +72,7 @@ All design docs live in `docs/`. Start with [MANIFEST.md](docs/MANIFEST.md) — 
 ## What's Not in v1
 
 - ❌ Cloud sync (user can export to JSON)
-- ❌ Push notifications, social alerts, or streak reminders
+- ❌ Social alerts, streak reminders, or pressure-based notifications (opt-in check-in reminders are available in Settings)
 - ❌ Social features or sharing
 - ❌ Experiment templates or suggestions
 - ❌ Gamification (streaks that reset, badges, leaderboards)
