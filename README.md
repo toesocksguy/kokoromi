@@ -18,7 +18,7 @@ Most habit apps are built on shame and streaks. Kokoromi is built on curiosity. 
 
 1. **Curiosity over achievement** — Experiments are questions, not goals
 2. **Simplicity over gamification** — No badges, no leaderboards, no shame mechanics
-3. **User agency** — No dark patterns, no notifications, no pressure
+3. **User agency** — No dark patterns, no pressure. Opt-in reminders only, fully user-controlled
 4. **Privacy by default** — All data stays on your device, zero telemetry
 5. **Offline-first** — Works fully without internet
 6. **Accessibility** — WCAG 2.1 AA, built in from the start
@@ -63,9 +63,28 @@ All design docs live in `docs/`. Start with [MANIFEST.md](docs/MANIFEST.md) — 
 - Experiments paused via the completion screen ("set this aside") are stored with `ARCHIVED` status instead of `PAUSED`, so they appear in the wrong Archive tab and cannot be resumed. **Note:** `CompleteExperimentUseCaseTest` currently asserts `ARCHIVED` as the expected status for pause — fix those test assertions alongside the status fix, or the tests will fail after the bug is corrected.
 - Resume button for paused experiments is not yet implemented in the Archive screen
 
+**Backlog**
+- Import data from JSON export (complement to existing export feature)
+
 **Remaining M7 tasks**
 - Unit tests for `GetReflectionPromptStateUseCase`, `GetActiveExperimentsWithLogsUseCase`, `UpdateExperimentStatusUseCase`
-- Accessibility pass: semantics on Archive list items and ExperimentDetail timeline; Android Accessibility Scanner run
+- Accessibility pass:
+  - `ExperimentDetailScreen.kt` lines 336–339, 378–379: `LogItem` and `ReflectionItem` have empty `semantics(mergeDescendants = true) {}` blocks — hook is there but no `contentDescription`; timeline entries announce nothing to screen readers
+  - `ArchiveScreen.kt` line 143: archive items describe hypothesis + status only; date range and completion rate (visible on screen) missing from `contentDescription`
+  - `ExperimentCard.kt` lines 118–123: "Edit Log" button has no `contentDescription`; appears when today is already logged
+  - Android Accessibility Scanner run
+- Daily check-in reminder notification (opt-in):
+  - `app/build.gradle.kts` — add `work-runtime-ktx:2.9.1`, `hilt-work:1.2.0`, `ksp(hilt-compiler:1.2.0)`
+  - `AndroidManifest.xml` — `POST_NOTIFICATIONS` permission; disable default WorkManager initializer so Hilt can provide it
+  - `res/drawable/ic_notification.xml` — monochrome notification bell icon
+  - `Constants.kt` — add `NOTIFICATION_CHANNEL_ID`, `REMINDER_WORK_NAME`, pref keys
+  - `UserPreferences.kt` — add `reminderEnabled: Boolean = false`, `reminderHour: Int = 20`, `reminderMinute: Int = 0`
+  - `PreferencesRepository` / `DefaultPreferencesRepository` — add `setReminderEnabled` and `setReminderTime`
+  - `KokoromiApp.kt` — create `NotificationChannel`; implement `Configuration.Provider` to inject `HiltWorkerFactory`
+  - `notification/CheckInReminderWorker.kt` — `@HiltWorker`; queries active experiments + today's logs; fires notification only if any experiment unlogged
+  - `notification/ReminderScheduler.kt` — schedules/cancels `PeriodicWorkRequest` with computed initial delay to hit user's chosen time
+  - `SettingsViewModel.kt` — inject `ReminderScheduler`; `onReminderToggle` / `onReminderTimeChange` handlers
+  - `SettingsScreen.kt` — Notifications section: Switch (off by default), time-picker row (shown when enabled), `POST_NOTIFICATIONS` runtime permission request on Android 13+
 - Release CI: `.github/workflows/release.yml` — build and publish APK on git tag
 
 ---
@@ -73,7 +92,7 @@ All design docs live in `docs/`. Start with [MANIFEST.md](docs/MANIFEST.md) — 
 ## What's Not in v1
 
 - ❌ Cloud sync (user can export to JSON)
-- ❌ Notifications or reminders
+- ❌ Push notifications, social alerts, or streak reminders
 - ❌ Social features or sharing
 - ❌ Experiment templates or suggestions
 - ❌ Gamification (streaks that reset, badges, leaderboards)
@@ -92,7 +111,7 @@ This is sometimes called "vibe-coding." Being transparent about it feels consist
 
 Contributions are welcome. Please read [OPEN_SOURCE_GUIDE.md](docs/OPEN_SOURCE_GUIDE.md) before submitting a PR.
 
-Feature ideas that add gamification, notifications, social comparison, or cloud telemetry will not be merged — see [PHILOSOPHY.md](docs/PHILOSOPHY.md) for why.
+Feature ideas that add gamification, pressure-based notifications, social comparison, or cloud telemetry will not be merged — see [PHILOSOPHY.md](docs/PHILOSOPHY.md) for why.
 
 ---
 
