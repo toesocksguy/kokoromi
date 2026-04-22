@@ -7,6 +7,7 @@ import com.kokoromi.data.model.UserPreferences
 import com.kokoromi.data.repository.PreferencesRepository
 import com.kokoromi.domain.usecase.ClearAllDataUseCase
 import com.kokoromi.domain.usecase.ExportDataUseCase
+import com.kokoromi.notification.ReminderScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,6 +30,7 @@ class SettingsViewModel @Inject constructor(
     private val preferencesRepository: PreferencesRepository,
     private val exportData: ExportDataUseCase,
     private val clearAllData: ClearAllDataUseCase,
+    private val reminderScheduler: ReminderScheduler,
 ) : ViewModel() {
 
     val preferences: StateFlow<UserPreferences> = preferencesRepository.getUserPreferences()
@@ -66,6 +68,27 @@ class SettingsViewModel @Inject constructor(
                 _events.send(SettingsEvent.DataCleared)
             }.onFailure { e ->
                 _events.send(SettingsEvent.Error(e.message ?: "Failed to delete data"))
+            }
+        }
+    }
+
+    fun onReminderToggle(enabled: Boolean) {
+        viewModelScope.launch {
+            preferencesRepository.setReminderEnabled(enabled)
+            val prefs = preferences.value
+            if (enabled) {
+                reminderScheduler.schedule(prefs.reminderHour, prefs.reminderMinute)
+            } else {
+                reminderScheduler.cancel()
+            }
+        }
+    }
+
+    fun onReminderTimeChange(hour: Int, minute: Int) {
+        viewModelScope.launch {
+            preferencesRepository.setReminderTime(hour, minute)
+            if (preferences.value.reminderEnabled) {
+                reminderScheduler.schedule(hour, minute)
             }
         }
     }

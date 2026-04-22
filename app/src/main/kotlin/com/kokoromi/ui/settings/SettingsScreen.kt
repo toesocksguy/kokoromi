@@ -1,7 +1,10 @@
 package com.kokoromi.ui.settings
 
+import android.Manifest
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,16 +16,18 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -34,11 +39,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kokoromi.data.model.ThemePreference
 import com.kokoromi.ui.components.KokoromiBottomNav
 import java.time.DayOfWeek
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
@@ -53,7 +61,14 @@ fun SettingsScreen(
     val context = LocalContext.current
     var showReflectionDayPicker by remember { mutableStateOf(false) }
     var showDeleteConfirm by remember { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(false) }
     var pendingExportJson by remember { mutableStateOf<String?>(null) }
+
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) viewModel.onReminderToggle(true)
+    }
 
     val createDocumentLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("application/json")
@@ -80,6 +95,18 @@ fun SettingsScreen(
                 }
             }
         }
+    }
+
+    if (showTimePicker) {
+        ReminderTimeDialog(
+            hour = prefs.reminderHour,
+            minute = prefs.reminderMinute,
+            onConfirm = { h, m ->
+                viewModel.onReminderTimeChange(h, m)
+                showTimePicker = false
+            },
+            onDismiss = { showTimePicker = false },
+        )
     }
 
     if (showReflectionDayPicker) {
@@ -160,6 +187,50 @@ fun SettingsScreen(
 
             HorizontalDivider()
 
+            SectionLabel("Notifications", topPadding = true)
+
+            SettingsRow(
+                label = "Daily check-in reminder",
+                trailing = {
+                    Switch(
+                        checked = prefs.reminderEnabled,
+                        onCheckedChange = { enabled ->
+                            if (enabled) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                                    ContextCompat.checkSelfPermission(
+                                        context, Manifest.permission.POST_NOTIFICATIONS
+                                    ) != android.content.pm.PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                } else {
+                                    viewModel.onReminderToggle(true)
+                                }
+                            } else {
+                                viewModel.onReminderToggle(false)
+                            }
+                        },
+                    )
+                },
+            )
+
+            if (prefs.reminderEnabled) {
+                HorizontalDivider()
+                SettingsRow(
+                    label = "Reminder time",
+                    trailing = {
+                        TextButton(onClick = { showTimePicker = true }) {
+                            Text(
+                                formatReminderTime(prefs.reminderHour, prefs.reminderMinute) + " ›",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    },
+                )
+            }
+
+            HorizontalDivider()
+
             SectionLabel("Data", topPadding = true)
 
             OutlinedButton(
@@ -227,6 +298,30 @@ private fun SettingsRow(
         trailing?.invoke()
         content?.invoke()
     }
+}
+
+private fun formatReminderTime(hour: Int, minute: Int): String =
+    DateTimeFormatter.ofPattern("h:mm a").format(LocalTime.of(hour, minute))
+
+@Composable
+private fun ReminderTimeDialog(
+    hour: Int,
+    minute: Int,
+    onConfirm: (Int, Int) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val state = rememberTimePickerState(initialHour = hour, initialMinute = minute)
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Reminder time") },
+        text = { TimePicker(state = state) },
+        confirmButton = {
+            TextButton(onClick = { onConfirm(state.hour, state.minute) }) { Text("OK") }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel") }
+        },
+    )
 }
 
 @Composable
