@@ -234,13 +234,13 @@ class CompleteExperimentUseCaseTest {
     }
 
     @Test
-    fun `pause archives the experiment`() = runTest {
+    fun `pause sets experiment to PAUSED`() = runTest {
         whenever(experimentRepository.getExperiment(experimentId)).thenReturn(makeExperiment())
         whenever(dailyLogRepository.getLogsInRange(any(), any(), any())).thenReturn(emptyList())
 
         useCase.pause(experimentId, learnings = null)
 
-        verify(experimentRepository).updateExperimentStatus(experimentId, ExperimentStatus.ARCHIVED)
+        verify(experimentRepository).updateExperimentStatus(experimentId, ExperimentStatus.PAUSED)
     }
 
     @Test

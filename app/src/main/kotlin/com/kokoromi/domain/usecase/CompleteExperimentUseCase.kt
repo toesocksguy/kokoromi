@@ -100,7 +100,7 @@ class CompleteExperimentUseCase @Inject constructor(
     }
 
     /**
-     * Pause: archive the completed experiment with no follow-up.
+     * Pause: set the experiment to PAUSED so it can be resumed later.
      */
     suspend fun pause(
         experimentId: String,
@@ -126,7 +126,7 @@ class CompleteExperimentUseCase @Inject constructor(
                     createdAt = Instant.now(),
                 )
             )
-            experimentRepository.updateExperimentStatus(experimentId, ExperimentStatus.ARCHIVED)
+            experimentRepository.updateExperimentStatus(experimentId, ExperimentStatus.PAUSED)
         }
     }
 }
