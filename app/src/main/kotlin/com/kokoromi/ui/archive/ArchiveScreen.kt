@@ -15,14 +15,19 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
@@ -47,11 +52,20 @@ fun ArchiveScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val selectedTab by viewModel.selectedTab.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is ArchiveEvent.Resumed -> snackbarHostState.showSnackbar("Experiment resumed")
+                is ArchiveEvent.Error -> snackbarHostState.showSnackbar(event.message)
+            }
+        }
+    }
 
     Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("Archive") })
-        },
+        topBar = { TopAppBar(title = { Text("Archive") }) },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = { KokoromiBottomNav(selectedIndex = 2, onNavigate = onNavigateToTab) },
     ) { innerPadding ->
         when (val state = uiState) {
@@ -115,6 +129,9 @@ fun ArchiveScreen(
                                 ArchiveItem(
                                     experiment = experiment,
                                     onClick = { onNavigateToDetail(experiment.id) },
+                                    onResume = if (experiment.status == ExperimentStatus.PAUSED) {
+                                        { viewModel.onResume(experiment.id) }
+                                    } else null,
                                 )
                                 HorizontalDivider()
                             }
@@ -130,36 +147,49 @@ fun ArchiveScreen(
 private fun ArchiveItem(
     experiment: Experiment,
     onClick: () -> Unit,
+    onResume: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     val dateRange = "${dateFmt.format(experiment.startDate)} – ${dateFmt.format(experiment.endDate)}"
     val totalDays = experiment.startDate.until(experiment.endDate, java.time.temporal.ChronoUnit.DAYS) + 1
 
-    Row(
+    Column(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .padding(vertical = 12.dp)
             .semantics { contentDescription = "${experiment.hypothesis}, ${experiment.status.name.lowercase()}" },
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Top,
     ) {
-        Column(
-            modifier = Modifier.weight(1f).padding(end = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(2.dp),
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top,
         ) {
-            Text(
-                text = experiment.hypothesis,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            Text(
-                text = "$totalDays days · $dateRange",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            Column(
+                modifier = Modifier.weight(1f).padding(end = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+            ) {
+                Text(
+                    text = experiment.hypothesis,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text = "$totalDays days · $dateRange",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            StatusBadge(status = experiment.status)
         }
-        StatusBadge(status = experiment.status)
+        if (onResume != null) {
+            TextButton(
+                onClick = onResume,
+                modifier = Modifier.padding(top = 4.dp),
+            ) {
+                Text("Resume experiment")
+            }
+        }
     }
 }
 
