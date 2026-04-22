@@ -26,6 +26,12 @@ jobs:
       - name: Grant execute permission to gradlew
         run: chmod +x gradlew
 
+      - name: Run unit tests
+        run: ./gradlew testDebugUnitTest --stacktrace
+
+      - name: Run lint
+        run: ./gradlew lintRelease --stacktrace
+
       - name: Decode keystore
         run: echo "${{ secrets.SIGNING_KEYSTORE_BASE64 }}" | base64 -d > $RUNNER_TEMP/keystore.jks
 
