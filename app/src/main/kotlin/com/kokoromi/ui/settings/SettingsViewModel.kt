@@ -7,6 +7,8 @@ import com.kokoromi.data.model.UserPreferences
 import com.kokoromi.data.repository.PreferencesRepository
 import com.kokoromi.domain.usecase.ClearAllDataUseCase
 import com.kokoromi.domain.usecase.ExportDataUseCase
+import com.kokoromi.domain.usecase.ImportDataUseCase
+import com.kokoromi.domain.usecase.ImportResult
 import com.kokoromi.notification.ReminderScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -21,6 +23,7 @@ import javax.inject.Inject
 
 sealed interface SettingsEvent {
     data class ExportReady(val json: String) : SettingsEvent
+    data class ImportComplete(val result: ImportResult) : SettingsEvent
     data class Error(val message: String) : SettingsEvent
     data object DataCleared : SettingsEvent
 }
@@ -29,6 +32,7 @@ sealed interface SettingsEvent {
 class SettingsViewModel @Inject constructor(
     private val preferencesRepository: PreferencesRepository,
     private val exportData: ExportDataUseCase,
+    private val importData: ImportDataUseCase,
     private val clearAllData: ClearAllDataUseCase,
     private val reminderScheduler: ReminderScheduler,
 ) : ViewModel() {
@@ -58,6 +62,16 @@ class SettingsViewModel @Inject constructor(
                 _events.send(SettingsEvent.ExportReady(json))
             }.onFailure { e ->
                 _events.send(SettingsEvent.Error(e.message ?: "Export failed"))
+            }
+        }
+    }
+
+    fun onImport(json: String) {
+        viewModelScope.launch {
+            importData(json).onSuccess { result ->
+                _events.send(SettingsEvent.ImportComplete(result))
+            }.onFailure { e ->
+                _events.send(SettingsEvent.Error(e.message ?: "Import failed"))
             }
         }
     }

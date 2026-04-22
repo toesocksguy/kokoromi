@@ -43,6 +43,7 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kokoromi.data.model.ThemePreference
+import com.kokoromi.domain.usecase.ImportResult
 import com.kokoromi.ui.components.KokoromiBottomNav
 import java.time.DayOfWeek
 import java.time.LocalTime
@@ -80,12 +81,24 @@ fun SettingsScreen(
         pendingExportJson = null
     }
 
+    val openDocumentLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri != null) {
+            val json = context.contentResolver.openInputStream(uri)?.use { it.readBytes().toString(Charsets.UTF_8) }
+            if (json != null) viewModel.onImport(json)
+        }
+    }
+
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             when (event) {
                 is SettingsEvent.ExportReady -> {
                     pendingExportJson = event.json
                     createDocumentLauncher.launch("kokoromi_export.json")
+                }
+                is SettingsEvent.ImportComplete -> {
+                    snackbarHostState.showSnackbar(importSummary(event.result))
                 }
                 is SettingsEvent.DataCleared -> {
                     snackbarHostState.showSnackbar("All data deleted")
@@ -240,6 +253,13 @@ fun SettingsScreen(
                 Text("Export all data as JSON")
             }
 
+            OutlinedButton(
+                onClick = { openDocumentLauncher.launch(arrayOf("application/json")) },
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+            ) {
+                Text("Import from JSON")
+            }
+
             val errorColor = MaterialTheme.colorScheme.error
             OutlinedButton(
                 onClick = { showDeleteConfirm = true },
@@ -302,6 +322,16 @@ private fun SettingsRow(
 
 private fun formatReminderTime(hour: Int, minute: Int): String =
     DateTimeFormatter.ofPattern("h:mm a").format(LocalTime.of(hour, minute))
+
+private fun importSummary(result: ImportResult): String {
+    val parts = buildList {
+        if (result.experimentsAdded > 0) add("${result.experimentsAdded} experiments")
+        if (result.logsProcessed > 0) add("${result.logsProcessed} logs")
+        if (result.reflectionsProcessed > 0) add("${result.reflectionsProcessed} reflections")
+        if (result.fieldNotesAdded > 0) add("${result.fieldNotesAdded} field notes")
+    }
+    return if (parts.isEmpty()) "Nothing new to import" else "Imported ${parts.joinToString(", ")}"
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
