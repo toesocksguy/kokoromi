@@ -26,4 +26,12 @@ object Constants {
     // Preferences keys
     const val PREF_REFLECTION_DAY = "reflection_day"
     const val PREF_THEME = "theme"
+    const val PREF_REMINDER_ENABLED = "reminder_enabled"
+    const val PREF_REMINDER_HOUR = "reminder_hour"
+    const val PREF_REMINDER_MINUTE = "reminder_minute"
+
+    // Notifications
+    const val NOTIFICATION_CHANNEL_ID = "check_in_reminder"
+    const val NOTIFICATION_ID = 1001
+    const val REMINDER_WORK_NAME = "check_in_reminder"
 }
