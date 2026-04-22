@@ -9,4 +9,6 @@ interface PreferencesRepository {
     fun getUserPreferences(): Flow<UserPreferences>
     suspend fun setReflectionDay(day: DayOfWeek)
     suspend fun setTheme(theme: ThemePreference)
+    suspend fun setReminderEnabled(enabled: Boolean)
+    suspend fun setReminderTime(hour: Int, minute: Int)
 }

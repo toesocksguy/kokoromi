@@ -2,6 +2,7 @@ package com.kokoromi.data.repository
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -19,12 +20,18 @@ class DefaultPreferencesRepository @Inject constructor(
 
     private val reflectionDayKey = intPreferencesKey(Constants.PREF_REFLECTION_DAY)
     private val themeKey = stringPreferencesKey(Constants.PREF_THEME)
+    private val reminderEnabledKey = booleanPreferencesKey(Constants.PREF_REMINDER_ENABLED)
+    private val reminderHourKey = intPreferencesKey(Constants.PREF_REMINDER_HOUR)
+    private val reminderMinuteKey = intPreferencesKey(Constants.PREF_REMINDER_MINUTE)
 
     override fun getUserPreferences(): Flow<UserPreferences> {
         return dataStore.data.map { prefs ->
             UserPreferences(
                 reflectionDay = DayOfWeek.of(prefs[reflectionDayKey] ?: DayOfWeek.SUNDAY.value),
                 theme = prefs[themeKey]?.let { ThemePreference.valueOf(it) } ?: ThemePreference.SYSTEM,
+                reminderEnabled = prefs[reminderEnabledKey] ?: false,
+                reminderHour = prefs[reminderHourKey] ?: 20,
+                reminderMinute = prefs[reminderMinuteKey] ?: 0,
             )
         }
     }
@@ -35,5 +42,16 @@ class DefaultPreferencesRepository @Inject constructor(
 
     override suspend fun setTheme(theme: ThemePreference) {
         dataStore.edit { prefs -> prefs[themeKey] = theme.name }
+    }
+
+    override suspend fun setReminderEnabled(enabled: Boolean) {
+        dataStore.edit { prefs -> prefs[reminderEnabledKey] = enabled }
+    }
+
+    override suspend fun setReminderTime(hour: Int, minute: Int) {
+        dataStore.edit { prefs ->
+            prefs[reminderHourKey] = hour
+            prefs[reminderMinuteKey] = minute
+        }
     }
 }
