@@ -59,10 +59,6 @@ All design docs live in `docs/`. Start with [MANIFEST.md](docs/MANIFEST.md) — 
 
 ## Known Issues & Remaining Work
 
-**Bugs**
-- Experiments paused via the completion screen ("set this aside") are stored with `ARCHIVED` status instead of `PAUSED`, so they appear in the wrong Archive tab and cannot be resumed. **Note:** `CompleteExperimentUseCaseTest` currently asserts `ARCHIVED` as the expected status for pause — fix those test assertions alongside the status fix, or the tests will fail after the bug is corrected.
-- Resume button for paused experiments is not yet implemented in the Archive screen
-
 **Backlog**
 - Import data from JSON export (complement to existing export feature)
 

@@ -119,7 +119,8 @@ fun ExperimentCard(
                     onClick = onCheckIn,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .minimumInteractiveComponentSize(),
+                        .minimumInteractiveComponentSize()
+                        .semantics { contentDescription = "Edit today's log for $action" },
                 ) { Text("Edit Log") }
             } else {
                 Row(

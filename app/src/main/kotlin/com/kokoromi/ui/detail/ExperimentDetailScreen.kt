@@ -333,10 +333,15 @@ private fun LogItem(
     modifier: Modifier = Modifier,
 ) {
     val dateFmt = DateTimeFormatter.ofPattern("MMM d")
+    val statusText = if (log.completed) "completed" else "not completed"
+    val moodText = log.moodAfter?.let { ", mood $it out of 5" } ?: ""
+    val notesText = log.notes?.let { ", note: $it" } ?: ""
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .semantics(mergeDescendants = true) {},
+            .semantics(mergeDescendants = true) {
+                contentDescription = "${log.date.format(dateFmt)}, $statusText$moodText$notesText"
+            },
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.Top,
     ) {
@@ -375,8 +380,13 @@ private fun ReflectionItem(
     modifier: Modifier = Modifier,
 ) {
     val dateFmt = DateTimeFormatter.ofPattern("MMM d")
+    val plusText = reflection.plus?.let { ", what worked: $it" } ?: ""
+    val minusText = reflection.minus?.let { ", what didn't: $it" } ?: ""
+    val nextText = reflection.next?.let { ", next: $it" } ?: ""
     Column(
-        modifier = modifier.semantics(mergeDescendants = true) {},
+        modifier = modifier.semantics(mergeDescendants = true) {
+            contentDescription = "Week of ${reflection.reflectionDate.format(dateFmt)}$plusText$minusText$nextText"
+        },
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Text(

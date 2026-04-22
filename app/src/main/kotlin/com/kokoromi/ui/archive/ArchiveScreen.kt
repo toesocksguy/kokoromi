@@ -158,7 +158,7 @@ private fun ArchiveItem(
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .padding(vertical = 12.dp)
-            .semantics { contentDescription = "${experiment.hypothesis}, ${experiment.status.name.lowercase()}" },
+            .semantics { contentDescription = "${experiment.hypothesis}, ${experiment.status.name.lowercase()}, $totalDays days, $dateRange" },
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
