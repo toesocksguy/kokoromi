@@ -20,7 +20,7 @@ class GetActiveExperimentsWithLogsUseCase @Inject constructor(
 ) {
     operator fun invoke(): Flow<List<ExperimentWithLogs>> =
         experimentRepository.getAllExperiments()
-            .map { all -> all.filter { it.status == ExperimentStatus.ACTIVE || it.status == ExperimentStatus.PAUSED } }
+            .map { all -> all.filter { it.status == ExperimentStatus.ACTIVE } }
             .flatMapLatest { experiments ->
                 if (experiments.isEmpty()) {
                     flowOf(emptyList())
