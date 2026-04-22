@@ -51,7 +51,7 @@ class HomeScreenTest {
     @Test
     fun showsEmptyStateWhenNoExperiments() {
         composeRule.setContent {
-            HomeScreen(onCreateExperiment = {}, onCheckIn = { _, _ -> }, onNavigateToCompletion = {}, onNavigateToReflection = {}, onNavigateToDetail = {}, viewModel = viewModel)
+            HomeScreen(onCreateExperiment = {}, onCheckIn = { _, _ -> }, onNavigateToCompletion = {}, onNavigateToReflection = {}, onNavigateToDetail = {}, onNavigateToTab = {}, viewModel = viewModel)
         }
 
         composeRule.onNodeWithText("No active experiments").assertIsDisplayed()
@@ -60,7 +60,7 @@ class HomeScreenTest {
     @Test
     fun showsCreateButtonInEmptyState() {
         composeRule.setContent {
-            HomeScreen(onCreateExperiment = {}, onCheckIn = { _, _ -> }, onNavigateToCompletion = {}, onNavigateToReflection = {}, onNavigateToDetail = {}, viewModel = viewModel)
+            HomeScreen(onCreateExperiment = {}, onCheckIn = { _, _ -> }, onNavigateToCompletion = {}, onNavigateToReflection = {}, onNavigateToDetail = {}, onNavigateToTab = {}, viewModel = viewModel)
         }
 
         composeRule.onNodeWithContentDescription("Create experiment").assertIsDisplayed()
@@ -70,7 +70,7 @@ class HomeScreenTest {
     fun clickingCreateButtonInEmptyStateInvokesCallback() {
         var called = false
         composeRule.setContent {
-            HomeScreen(onCreateExperiment = { called = true }, onCheckIn = { _, _ -> }, onNavigateToCompletion = {}, onNavigateToReflection = {}, onNavigateToDetail = {}, viewModel = viewModel)
+            HomeScreen(onCreateExperiment = { called = true }, onCheckIn = { _, _ -> }, onNavigateToCompletion = {}, onNavigateToReflection = {}, onNavigateToDetail = {}, onNavigateToTab = {}, viewModel = viewModel)
         }
 
         composeRule.onNodeWithContentDescription("Create experiment").performClick()
@@ -83,7 +83,7 @@ class HomeScreenTest {
         fakeRepo.setActiveExperiments(listOf(makeExperiment(action = "Read for 20 minutes")))
 
         composeRule.setContent {
-            HomeScreen(onCreateExperiment = {}, onCheckIn = { _, _ -> }, onNavigateToCompletion = {}, onNavigateToReflection = {}, onNavigateToDetail = {}, viewModel = viewModel)
+            HomeScreen(onCreateExperiment = {}, onCheckIn = { _, _ -> }, onNavigateToCompletion = {}, onNavigateToReflection = {}, onNavigateToDetail = {}, onNavigateToTab = {}, viewModel = viewModel)
         }
 
         composeRule.onNodeWithText("Read for 20 minutes").assertIsDisplayed()
@@ -94,7 +94,7 @@ class HomeScreenTest {
         fakeRepo.setActiveExperiments(listOf(makeExperiment()))
 
         composeRule.setContent {
-            HomeScreen(onCreateExperiment = {}, onCheckIn = { _, _ -> }, onNavigateToCompletion = {}, onNavigateToReflection = {}, onNavigateToDetail = {}, viewModel = viewModel)
+            HomeScreen(onCreateExperiment = {}, onCheckIn = { _, _ -> }, onNavigateToCompletion = {}, onNavigateToReflection = {}, onNavigateToDetail = {}, onNavigateToTab = {}, viewModel = viewModel)
         }
 
         composeRule.onNodeWithContentDescription("New experiment").assertIsDisplayed()
@@ -105,7 +105,7 @@ class HomeScreenTest {
         fakeRepo.setActiveExperiments(listOf(makeExperiment(), makeExperiment()))
 
         composeRule.setContent {
-            HomeScreen(onCreateExperiment = {}, onCheckIn = { _, _ -> }, onNavigateToCompletion = {}, onNavigateToReflection = {}, onNavigateToDetail = {}, viewModel = viewModel)
+            HomeScreen(onCreateExperiment = {}, onCheckIn = { _, _ -> }, onNavigateToCompletion = {}, onNavigateToReflection = {}, onNavigateToDetail = {}, onNavigateToTab = {}, viewModel = viewModel)
         }
 
         composeRule.onNodeWithContentDescription("New experiment").assertDoesNotExist()
@@ -117,7 +117,7 @@ class HomeScreenTest {
         fakeRepo.setActiveExperiments(listOf(makeExperiment()))
 
         composeRule.setContent {
-            HomeScreen(onCreateExperiment = { called = true }, onCheckIn = { _, _ -> }, onNavigateToCompletion = {}, onNavigateToReflection = {}, onNavigateToDetail = {}, viewModel = viewModel)
+            HomeScreen(onCreateExperiment = { called = true }, onCheckIn = { _, _ -> }, onNavigateToCompletion = {}, onNavigateToReflection = {}, onNavigateToDetail = {}, onNavigateToTab = {}, viewModel = viewModel)
         }
 
         composeRule.onNodeWithContentDescription("New experiment").performClick()
@@ -133,7 +133,7 @@ class HomeScreenTest {
         ))
 
         composeRule.setContent {
-            HomeScreen(onCreateExperiment = {}, onCheckIn = { _, _ -> }, onNavigateToCompletion = {}, onNavigateToReflection = {}, onNavigateToDetail = {}, viewModel = viewModel)
+            HomeScreen(onCreateExperiment = {}, onCheckIn = { _, _ -> }, onNavigateToCompletion = {}, onNavigateToReflection = {}, onNavigateToDetail = {}, onNavigateToTab = {}, viewModel = viewModel)
         }
 
         composeRule.onNodeWithText("Meditate daily").assertIsDisplayed()
