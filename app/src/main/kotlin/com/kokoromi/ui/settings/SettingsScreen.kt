@@ -303,6 +303,7 @@ private fun SettingsRow(
 private fun formatReminderTime(hour: Int, minute: Int): String =
     DateTimeFormatter.ofPattern("h:mm a").format(LocalTime.of(hour, minute))
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ReminderTimeDialog(
     hour: Int,

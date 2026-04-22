@@ -73,18 +73,7 @@ All design docs live in `docs/`. Start with [MANIFEST.md](docs/MANIFEST.md) — 
   - `ArchiveScreen.kt` line 143: archive items describe hypothesis + status only; date range and completion rate (visible on screen) missing from `contentDescription`
   - `ExperimentCard.kt` lines 118–123: "Edit Log" button has no `contentDescription`; appears when today is already logged
   - Android Accessibility Scanner run
-- Daily check-in reminder notification (opt-in):
-  - `app/build.gradle.kts` — add `work-runtime-ktx:2.9.1`, `hilt-work:1.2.0`, `ksp(hilt-compiler:1.2.0)`
-  - `AndroidManifest.xml` — `POST_NOTIFICATIONS` permission; disable default WorkManager initializer so Hilt can provide it
-  - `res/drawable/ic_notification.xml` — monochrome notification bell icon
-  - `Constants.kt` — add `NOTIFICATION_CHANNEL_ID`, `REMINDER_WORK_NAME`, pref keys
-  - `UserPreferences.kt` — add `reminderEnabled: Boolean = false`, `reminderHour: Int = 20`, `reminderMinute: Int = 0`
-  - `PreferencesRepository` / `DefaultPreferencesRepository` — add `setReminderEnabled` and `setReminderTime`
-  - `KokoromiApp.kt` — create `NotificationChannel`; implement `Configuration.Provider` to inject `HiltWorkerFactory`
-  - `notification/CheckInReminderWorker.kt` — `@HiltWorker`; queries active experiments + today's logs; fires notification only if any experiment unlogged
-  - `notification/ReminderScheduler.kt` — schedules/cancels `PeriodicWorkRequest` with computed initial delay to hit user's chosen time
-  - `SettingsViewModel.kt` — inject `ReminderScheduler`; `onReminderToggle` / `onReminderTimeChange` handlers
-  - `SettingsScreen.kt` — Notifications section: Switch (off by default), time-picker row (shown when enabled), `POST_NOTIFICATIONS` runtime permission request on Android 13+
+- ✅ Daily check-in reminder notification (opt-in) — complete
 - Release CI: `.github/workflows/release.yml` — build and publish APK on git tag
 
 ---
